@@ -1,11 +1,15 @@
 #include "game_app.h"
+#include "time.h"
 
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL.h>
 
 namespace engine::core // 命名空间与路径一致
 {
-    GameApp::GameApp() = default;
+    GameApp::GameApp()
+    {
+        time_ = std::make_unique<Time>();
+    }
 
     GameApp::~GameApp()
     {
@@ -23,13 +27,20 @@ namespace engine::core // 命名空间与路径一致
             spdlog::error("初始化失败，无法运行游戏");
             return;
         }
+
+        time_->setTargetFps(60);
+
         // 初始化正常，开始游戏主循环
         while (is_running_)
         {
-            float delta_time = 0.01f;
+            time_->update();
+            float delta_time = time_->getDeltaTime();
+
             handleEvents();
             update(delta_time);
             render();
+
+            spdlog::info("delta_time：{}", delta_time);
         }
         close(); // 离开游戏则清理
     }

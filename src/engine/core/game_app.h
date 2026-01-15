@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 // 前向声明，减少头文件依赖，加速编译
 struct SDL_Window;
@@ -6,12 +7,17 @@ struct SDL_Renderer;
 
 namespace engine::core // 命名空间与路径一致
 {
+    class Time;
+
     class GameApp final
     {
     private:
         SDL_Window *window_ = nullptr;
         SDL_Renderer *sdl_renderer_ = nullptr;
         bool is_running_ = false;
+
+        // 引擎组件
+        std::unique_ptr<engine::core::Time> time_;
 
     public:
         GameApp();

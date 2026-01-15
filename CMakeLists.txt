@@ -315,6 +315,7 @@ find_or_fetch_dependency(
 set(SOURCES
     src/main.cpp
     src/engine/core/game_app.cpp
+    src/engine/core/time.cpp
 )
 
 # --- 添加 ImGui 开始 ---
