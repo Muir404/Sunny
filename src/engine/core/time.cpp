@@ -1,5 +1,5 @@
 #include "time.h"
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_stdinc.h>
 #include <spdlog/spdlog.h>
 
 namespace engine::core // 命名空间与路径一致
@@ -91,6 +91,7 @@ namespace engine::core // 命名空间与路径一致
             Uint64 ns_to_wait = static_cast<Uint64>(time_to_wait * 1e9);
             SDL_DelayNS(ns_to_wait);
             delta_time_ = static_cast<double>(SDL_GetTicksNS() - last_time_) / 1e9;
+            // delta_time_ = target_frame_time_; 如果直接赋值 target_frame_time_，误差会累积！
         }
         else
         {

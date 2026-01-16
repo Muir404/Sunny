@@ -1,15 +1,12 @@
 #include "game_app.h"
 #include "time.h"
-
+#include "../resource/resource_manager.h"
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL.h>
 
 namespace engine::core // 命名空间与路径一致
 {
-    GameApp::GameApp()
-    {
-        time_ = std::make_unique<Time>();
-    }
+    GameApp::GameApp() = default;
 
     GameApp::~GameApp()
     {
@@ -40,7 +37,7 @@ namespace engine::core // 命名空间与路径一致
             update(delta_time);
             render();
 
-            spdlog::info("delta_time：{}", delta_time);
+            // spdlog::info("delta_time：{}", delta_time);
         }
         close(); // 离开游戏则清理
     }
@@ -48,25 +45,23 @@ namespace engine::core // 命名空间与路径一致
     bool GameApp::init()
     {
         spdlog::trace("初始化GameApp……");
-        if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) // 先看看SDL是否启动成功
+
+        if (!initSDL())
         {
-            spdlog::error("SDL初始化失败！SDL错误：{}", SDL_GetError());
             return false;
         }
 
-        window_ = SDL_CreateWindow("SunnyLand", 1280, 720, SDL_WINDOW_RESIZABLE); // 尝试启动window_
-        if (window_ == nullptr)
+        if (!initTime())
         {
-            spdlog::error("无法创建窗口！SDL错误：{}", SDL_GetError());
             return false;
         }
 
-        sdl_renderer_ = SDL_CreateRenderer(window_, nullptr); // 尝试把渲染器放入窗口，不限制渲染器(opengl\vulkan)
-        if (sdl_renderer_ == nullptr)
+        if (!initResourceManager())
         {
-            spdlog::error("无法创建渲染器！SDL错误：{}", SDL_GetError());
             return false;
         }
+
+        testResourceManager();
 
         is_running_ = true; // 设置为运行状态
         return true;
@@ -97,6 +92,10 @@ namespace engine::core // 命名空间与路径一致
     void GameApp::close()
     {
         spdlog::trace("关闭GameApp中");
+
+        // 为了确保正确的销毁顺序，有些智能指针对象也需要手动管理
+        resource_manager_.reset();
+
         if (sdl_renderer_ != nullptr)
         {
             SDL_DestroyRenderer(sdl_renderer_);
@@ -108,7 +107,72 @@ namespace engine::core // 命名空间与路径一致
             SDL_DestroyWindow(window_);
             window_ = nullptr;
         }
-        SDL_Quit();
+
         is_running_ = false;
+        SDL_Quit();
+    }
+
+    bool GameApp::initSDL()
+    {
+        if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) // 先看看SDL是否启动成功
+        {
+            spdlog::error("SDL初始化失败！SDL错误：{}", SDL_GetError());
+            return false;
+        }
+
+        window_ = SDL_CreateWindow("SunnyLand", 1280, 720, SDL_WINDOW_RESIZABLE); // 尝试启动window_
+        if (window_ == nullptr)
+        {
+            spdlog::error("无法创建窗口！SDL错误：{}", SDL_GetError());
+            return false;
+        }
+
+        sdl_renderer_ = SDL_CreateRenderer(window_, nullptr); // 尝试把渲染器放入窗口，不限制渲染器(opengl\vulkan)
+        if (sdl_renderer_ == nullptr)
+        {
+            spdlog::error("无法创建渲染器！SDL错误：{}", SDL_GetError());
+            return false;
+        }
+        spdlog::trace("SDL初始化成功");
+        return true;
+    }
+
+    bool GameApp::initTime()
+    {
+        try
+        {
+            time_ = std::make_unique<Time>();
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化时间管理失败: {}", e.what());
+            return false;
+        }
+        spdlog::trace("时间管理初始化成功。");
+        return true;
+    }
+    bool GameApp::initResourceManager()
+    {
+        try
+        {
+            resource_manager_ = std::make_unique<engine::resource::ResourceManager>(sdl_renderer_);
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化资源管理器失败: {}", e.what());
+            return false;
+        }
+        spdlog::trace("资源管理器初始化成功。");
+        return true;
+    }
+    void GameApp::testResourceManager()
+    {
+        resource_manager_->getTexture("assets/textures/Actors/eagle-attack.png"); // 加载纹理资源
+        resource_manager_->getFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 加载字体资源（带字号参数）
+        resource_manager_->getSound("assets/audio/button_click.wav");             // 加载音频资源
+
+        resource_manager_->unloadTexture("assets/textures/Actors/eagle-attack.png"); // 卸载纹理资源
+        resource_manager_->unloadFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 卸载字体资源
+        resource_manager_->unloadSound("assets/audio/button_click.wav");             // 卸载音频资源
     }
 }
