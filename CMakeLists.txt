@@ -320,6 +320,8 @@ set(SOURCES
     src/engine/resource/font_manager.cpp
     src/engine/resource/audio_manager.cpp
     src/engine/resource/texture_manager.cpp
+    src/engine/render/camera.cpp
+    src/engine/render/renderer.cpp
 )
 
 # --- 添加 ImGui 开始 ---

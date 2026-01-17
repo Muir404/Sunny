@@ -1,6 +1,8 @@
 #include "game_app.h"
 #include "time.h"
 #include "../resource/resource_manager.h"
+#include "../render/camera.h"
+#include "../render/renderer.h"
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL.h>
 
@@ -61,6 +63,16 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
+        if (!initRenderer())
+        {
+            return false;
+        }
+
+        if (!initCamera())
+        {
+            return false;
+        }
+
         testResourceManager();
 
         is_running_ = true; // 设置为运行状态
@@ -82,11 +94,20 @@ namespace engine::core // 命名空间与路径一致
     void GameApp::update(float /*delta_time*/)
     {
         // TODO 游戏逻辑更新
+        testCamera();
     }
 
     void GameApp::render()
     {
         // TODO 渲染代码
+        // 1. clear the screen
+        renderer_->clearScreen();
+
+        // 2. render
+        testRenderer();
+
+        // 3. update the screen
+        renderer_->present();
     }
 
     void GameApp::close()
@@ -95,6 +116,7 @@ namespace engine::core // 命名空间与路径一致
 
         // 为了确保正确的销毁顺序，有些智能指针对象也需要手动管理
         resource_manager_.reset();
+        time_.reset();
 
         if (sdl_renderer_ != nullptr)
         {
@@ -133,6 +155,8 @@ namespace engine::core // 命名空间与路径一致
             spdlog::error("无法创建渲染器！SDL错误：{}", SDL_GetError());
             return false;
         }
+
+        SDL_SetRenderLogicalPresentation(sdl_renderer_, 640, 360, SDL_LOGICAL_PRESENTATION_LETTERBOX);
         spdlog::trace("SDL初始化成功");
         return true;
     }
@@ -165,6 +189,34 @@ namespace engine::core // 命名空间与路径一致
         spdlog::trace("资源管理器初始化成功。");
         return true;
     }
+    bool GameApp::initRenderer()
+    {
+        try
+        {
+            renderer_ = std::make_unique<engine::render::Renderer>(sdl_renderer_, resource_manager_.get());
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化渲染器失败：{}", e.what());
+            return false;
+        }
+        spdlog::trace("渲染器初始化成功");
+        return true;
+    }
+    bool GameApp::initCamera()
+    {
+        try
+        {
+            camera_ = std::make_unique<engine::render::Camera>(glm::vec2(640, 360));
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化相机失败：{}", e.what());
+            return false;
+        }
+        spdlog::trace("相机初始化成功");
+        return true;
+    }
     void GameApp::testResourceManager()
     {
         resource_manager_->getTexture("assets/textures/Actors/eagle-attack.png"); // 加载纹理资源
@@ -174,5 +226,33 @@ namespace engine::core // 命名空间与路径一致
         resource_manager_->unloadTexture("assets/textures/Actors/eagle-attack.png"); // 卸载纹理资源
         resource_manager_->unloadFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 卸载字体资源
         resource_manager_->unloadSound("assets/audio/button_click.wav");             // 卸载音频资源
+    }
+    void GameApp::testRenderer()
+    {
+        // 精灵对象定义
+        engine::render::Sprite sprite_world("assets/textures/Actors/frog.png");
+        engine::render::Sprite sprite_ui("assets/textures/UI/buttons/Start1.png");
+        engine::render::Sprite sprite_parallax("assets/textures/Layers/back.png");
+
+        // 旋转变量
+        static float rotation = 0.0f;
+        rotation += 0.1f;
+
+        // 渲染调用 (注意渲染顺序)
+        renderer_->drawParallax(*camera_, sprite_parallax, glm::vec2(100, 100), glm::vec2(0.5f, 0.5f), glm::bvec2{true, true});
+        renderer_->drawSprite(*camera_, sprite_world, glm::vec2(200, 200), glm::vec2(1.0f, 1.0f), rotation);
+        renderer_->drawUISprite(sprite_ui, glm::vec2(100, 100));
+    }
+    void GameApp::testCamera()
+    {
+        auto key_state = SDL_GetKeyboardState(nullptr);
+        if (key_state[SDL_SCANCODE_UP])
+            camera_->move(glm::vec2(0, -1));
+        if (key_state[SDL_SCANCODE_DOWN])
+            camera_->move(glm::vec2(0, 1));
+        if (key_state[SDL_SCANCODE_LEFT])
+            camera_->move(glm::vec2(-1, 0));
+        if (key_state[SDL_SCANCODE_RIGHT])
+            camera_->move(glm::vec2(1, 0));
     }
 }

@@ -1,6 +1,5 @@
 #pragma once
-
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_stdinc.h>    // 用于 Uint64
 
 namespace engine::core // 命名空间与路径一致
 {
