@@ -16,6 +16,11 @@ namespace engine::render
     class Camera;
 }
 
+namespace engine::input
+{
+    class InputManager;
+}
+
 namespace engine::core // 命名空间与路径一致
 {
     class Time;
@@ -34,6 +39,7 @@ namespace engine::core // 命名空间与路径一致
         std::unique_ptr<engine::render::Renderer> renderer_;
         std::unique_ptr<engine::render::Camera> camera_;
         std::unique_ptr<engine::core::Config> config_;
+        std::unique_ptr<engine::input::InputManager> input_manager_;
 
     public:
         GameApp();
@@ -60,10 +66,12 @@ namespace engine::core // 命名空间与路径一致
         [[nodiscard]] bool initResourceManager();
         [[nodiscard]] bool initRenderer();
         [[nodiscard]] bool initCamera();
+        [[nodiscard]] bool initInputManager();
 
         // 测试函数
         void testResourceManager();
         void testRenderer();
         void testCamera();
+        void testInputManager();
     };
 } // namespace engine::core

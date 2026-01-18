@@ -323,6 +323,7 @@ set(SOURCES
     src/engine/resource/texture_manager.cpp
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
+    src/engine/input/input_manager.cpp
 )
 
 # --- 添加 ImGui 开始 ---

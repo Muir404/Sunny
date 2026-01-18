@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL.h>
 #include "config.h"
+#include "../input/input_manager.h"
 
 namespace engine::core // 命名空间与路径一致
 {
@@ -35,6 +36,7 @@ namespace engine::core // 命名空间与路径一致
         {
             time_->update();
             float delta_time = time_->getDeltaTime();
+            input_manager_->update(); // 每帧显更新输入管理器
 
             handleEvents();
             update(delta_time);
@@ -79,6 +81,11 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
+        if (!initInputManager())
+        {
+            return false;
+        }
+
         testResourceManager();
 
         is_running_ = true; // 设置为运行状态
@@ -87,14 +94,23 @@ namespace engine::core // 命名空间与路径一致
 
     void GameApp::handleEvents()
     {
-        SDL_Event event;              // 事件集合
-        while (SDL_PollEvent(&event)) // 对实践进行轮询
+        // SDL_Event event;              // 事件集合
+        // while (SDL_PollEvent(&event)) // 对实践进行轮询
+        // {
+        //     if (event.type == SDL_EVENT_QUIT)
+        //     {
+        //         is_running_ = false; // 触发离开时间，设置运行标识为结束（假）
+        //     }
+        // }
+        // 转移到input_manager内部处理
+        if (input_manager_->shouldQuit())
         {
-            if (event.type == SDL_EVENT_QUIT)
-            {
-                is_running_ = false; // 触发离开时间，设置运行标识为结束（假）
-            }
+            spdlog::trace("GameApp收到来自InputManager的退出请求");
+            is_running_ = false;
+            return;
         }
+
+        testInputManager();
     }
 
     void GameApp::update(float /*delta_time*/)
@@ -248,6 +264,20 @@ namespace engine::core // 命名空间与路径一致
         return true;
     }
 
+    bool GameApp::initInputManager()
+    {
+        try
+        {
+            input_manager_ = std::make_unique<engine::input::InputManager>(sdl_renderer_, config_.get());
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::trace("输入管理器初始化失败", e.what());
+        }
+        spdlog::trace("输入管理器初始化成功");
+        return true;
+    }
+
     void GameApp::testResourceManager()
     {
         resource_manager_->getTexture("assets/textures/Actors/eagle-attack.png"); // 加载纹理资源
@@ -287,5 +317,33 @@ namespace engine::core // 命名空间与路径一致
             camera_->move(glm::vec2(-1, 0));
         if (key_state[SDL_SCANCODE_RIGHT])
             camera_->move(glm::vec2(1, 0));
+    }
+    void GameApp::testInputManager()
+    {
+        std::vector<std::string> actions = {
+            "move_up",
+            "move_down",
+            "move_left",
+            "move_right",
+            "jump",
+            "attack",
+            "pause",
+            "MouseLeftClick",
+            "MouseRightClick"};
+        for (const auto &action : actions)
+        {
+            if (input_manager_->isActionPressed(action))
+            {
+                spdlog::info("{} 按下 ", action);
+            }
+            if (input_manager_->isActionReleased(action))
+            {
+                spdlog::info("{} 抬起 ", action);
+            }
+            if (input_manager_->isActionDown(action))
+            {
+                spdlog::info("{} 按下 中 ", action);
+            }
+        }
     }
 }
