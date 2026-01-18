@@ -5,6 +5,7 @@
 #include "../render/renderer.h"
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL.h>
+#include "config.h"
 
 namespace engine::core // 命名空间与路径一致
 {
@@ -27,7 +28,7 @@ namespace engine::core // 命名空间与路径一致
             return;
         }
 
-        time_->setTargetFps(60);
+        // time_->setTargetFps(60); 优化为通过配置文件读取信息
 
         // 初始化正常，开始游戏主循环
         while (is_running_)
@@ -47,6 +48,11 @@ namespace engine::core // 命名空间与路径一致
     bool GameApp::init()
     {
         spdlog::trace("初始化GameApp……");
+
+        if (!initConfig())
+        {
+            return false;
+        }
 
         if (!initSDL())
         {
@@ -134,6 +140,21 @@ namespace engine::core // 命名空间与路径一致
         SDL_Quit();
     }
 
+    bool GameApp::initConfig()
+    {
+        try
+        {
+            config_ = std::make_unique<engine::core::Config>("assets/config.json");
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化配置失败：{}", e.what());
+            return false;
+        }
+        spdlog::trace("配置初始化成功");
+        return true;
+    }
+
     bool GameApp::initSDL()
     {
         if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) // 先看看SDL是否启动成功
@@ -142,7 +163,7 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
-        window_ = SDL_CreateWindow("SunnyLand", 1280, 720, SDL_WINDOW_RESIZABLE); // 尝试启动window_
+        window_ = SDL_CreateWindow(config_->window_title_.c_str(), config_->window_width_, config_->window_height_, SDL_WINDOW_RESIZABLE); // 尝试启动window_
         if (window_ == nullptr)
         {
             spdlog::error("无法创建窗口！SDL错误：{}", SDL_GetError());
@@ -156,7 +177,11 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
-        SDL_SetRenderLogicalPresentation(sdl_renderer_, 640, 360, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+        int vsync_mode = config_->vsync_enabled_ ? SDL_RENDERER_VSYNC_ADAPTIVE : SDL_RENDERER_VSYNC_DISABLED;
+        SDL_SetRenderVSync(sdl_renderer_, vsync_mode);
+        spdlog::trace("VSync设置为：{}", config_->vsync_enabled_ ? "Enable" : "Disable");
+
+        SDL_SetRenderLogicalPresentation(sdl_renderer_, config_->window_width_ / 2, config_->window_height_ / 2, SDL_LOGICAL_PRESENTATION_LETTERBOX);
         spdlog::trace("SDL初始化成功");
         return true;
     }
@@ -172,9 +197,12 @@ namespace engine::core // 命名空间与路径一致
             spdlog::error("初始化时间管理失败: {}", e.what());
             return false;
         }
+
+        time_->setTargetFps(config_->target_fps_);
         spdlog::trace("时间管理初始化成功。");
         return true;
     }
+
     bool GameApp::initResourceManager()
     {
         try
@@ -189,6 +217,7 @@ namespace engine::core // 命名空间与路径一致
         spdlog::trace("资源管理器初始化成功。");
         return true;
     }
+
     bool GameApp::initRenderer()
     {
         try
@@ -203,11 +232,12 @@ namespace engine::core // 命名空间与路径一致
         spdlog::trace("渲染器初始化成功");
         return true;
     }
+
     bool GameApp::initCamera()
     {
         try
         {
-            camera_ = std::make_unique<engine::render::Camera>(glm::vec2(640, 360));
+            camera_ = std::make_unique<engine::render::Camera>(glm::vec2(config_->window_width_ / 2, config_->window_height_ / 2));
         }
         catch (const std::exception &e)
         {
@@ -217,6 +247,7 @@ namespace engine::core // 命名空间与路径一致
         spdlog::trace("相机初始化成功");
         return true;
     }
+
     void GameApp::testResourceManager()
     {
         resource_manager_->getTexture("assets/textures/Actors/eagle-attack.png"); // 加载纹理资源
@@ -227,6 +258,7 @@ namespace engine::core // 命名空间与路径一致
         resource_manager_->unloadFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 卸载字体资源
         resource_manager_->unloadSound("assets/audio/button_click.wav");             // 卸载音频资源
     }
+
     void GameApp::testRenderer()
     {
         // 精灵对象定义
@@ -243,6 +275,7 @@ namespace engine::core // 命名空间与路径一致
         renderer_->drawSprite(*camera_, sprite_world, glm::vec2(200, 200), glm::vec2(1.0f, 1.0f), rotation);
         renderer_->drawUISprite(sprite_ui, glm::vec2(100, 100));
     }
+
     void GameApp::testCamera()
     {
         auto key_state = SDL_GetKeyboardState(nullptr);

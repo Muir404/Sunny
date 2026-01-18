@@ -19,6 +19,7 @@ namespace engine::render
 namespace engine::core // 命名空间与路径一致
 {
     class Time;
+    class Config;
 
     class GameApp final
     {
@@ -32,6 +33,7 @@ namespace engine::core // 命名空间与路径一致
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
         std::unique_ptr<engine::render::Renderer> renderer_;
         std::unique_ptr<engine::render::Camera> camera_;
+        std::unique_ptr<engine::core::Config> config_;
 
     public:
         GameApp();
@@ -52,6 +54,7 @@ namespace engine::core // 命名空间与路径一致
         void render();
         void close();
 
+        [[nodiscard]] bool initConfig();
         [[nodiscard]] bool initSDL();
         [[nodiscard]] bool initTime();
         [[nodiscard]] bool initResourceManager();
