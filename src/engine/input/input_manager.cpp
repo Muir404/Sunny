@@ -107,8 +107,8 @@ namespace engine::input
             bool is_down = event.key.down;
             bool is_repeat = event.key.repeat;
 
-            auto it = scancode_to_actions_map_.find(scancode);
-            if (it != scancode_to_actions_map_.end())
+            auto it = input_to_actions_map_.find(scancode);
+            if (it != input_to_actions_map_.end())
             { // 如果按键有对应的action
                 const std::vector<std::string> &associated_actions = it->second;
                 for (const auto &action_name : associated_actions)
@@ -123,8 +123,8 @@ namespace engine::input
         {
             Uint32 button = event.button.button; // 获取鼠标按钮
             bool is_down = event.button.down;
-            auto it = mouse_button_to_actions_map_.find(button);
-            if (it != mouse_button_to_actions_map_.end())
+            auto it = input_to_actions_map_.find(button);
+            if (it != input_to_actions_map_.end())
             { // 如果鼠标按钮有对应的action
                 const std::vector<std::string> &associated_actions = it->second;
                 for (const auto &action_name : associated_actions)
@@ -157,8 +157,7 @@ namespace engine::input
             throw std::runtime_error("输入管理器: Config 为空指针");
         }
         actions_to_keyname_map_ = config->input_mappings_; // 获取配置中的输入映射（动作 -> 按键名称）
-        scancode_to_actions_map_.clear();
-        mouse_button_to_actions_map_.clear();
+        input_to_actions_map_.clear();
         action_states_.clear();
 
         // 如果配置中没有定义鼠标按钮动作(通常不需要配置),则添加默认映射, 用于 UI
@@ -188,13 +187,13 @@ namespace engine::input
                 if (scancode != SDL_SCANCODE_UNKNOWN)
                 {
                     // 如果scancode有效,则将action添加到scancode_to_actions_map_中
-                    scancode_to_actions_map_[scancode].push_back(action_name);
+                    input_to_actions_map_[scancode].push_back(action_name);
                     spdlog::trace("  映射按键: {} (Scancode: {}) 到动作: {}", key_name, static_cast<int>(scancode), action_name);
                 }
                 else if (mouse_button != 0)
                 {
                     // 如果鼠标按钮有效,则将action添加到mouse_button_to_actions_map_中
-                    mouse_button_to_actions_map_[mouse_button].push_back(action_name);
+                    input_to_actions_map_[mouse_button].push_back(action_name);
                     spdlog::trace("  映射鼠标按钮: {} (Button ID: {}) 到动作: {}", key_name, static_cast<int>(mouse_button), action_name);
                     // else if: 未来可添加其它输入类型 ...
                 }

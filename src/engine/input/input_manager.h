@@ -28,10 +28,9 @@ namespace engine::input
     private:
         SDL_Renderer *sdl_renderer_; // 用于获取逻辑坐标的 SDL_Renderer 指针
 
-        std::unordered_map<std::string, std::vector<std::string>> actions_to_keyname_map_;   // 存储动作名称到按键名称列表的映射
-        std::unordered_map<SDL_Scancode, std::vector<std::string>> scancode_to_actions_map_; // 从键盘到关联的动作名称列表
-        std::unordered_map<Uint32, std::vector<std::string>> mouse_button_to_actions_map_;    // 从鼠标按钮到关联的动作名称列表
-        std::unordered_map<std::string, ActionState> action_states_;                         // 存储每个动作的当前状态
+        std::unordered_map<std::string, std::vector<std::string>> actions_to_keyname_map_;                      // 存储动作名称到按键名称列表的映射
+        std::unordered_map<std::variant<Uint32, SDL_Scancode>, std::vector<std::string>> input_to_actions_map_; // 从输入到关联的动作名称列表
+        std::unordered_map<std::string, ActionState> action_states_;                                            // 存储每个动作的当前状态
 
         bool should_quit_ = false; // 退出标志
         glm::vec2 mouse_position_; // 鼠标位置 (针对屏幕坐标)
