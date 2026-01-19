@@ -41,9 +41,9 @@ namespace engine::input
         void update(); // 更新输入状态，每轮循环最先调用
 
         // 动作状态检查
-        bool isActionDown(std::string action_name) const;     // 动作当前是否触发 (持续按下或本帧按下)
-        bool isActionPressed(std::string action_name) const;  // 动作是否在本帧刚刚按下
-        bool isActionReleased(std::string action_name) const; // 动作是否在本帧刚刚释放
+        bool isActionDown(const std::string &action_name) const;     // 动作当前是否触发 (持续按下或本帧按下)
+        bool isActionPressed(const std::string &action_name) const;  // 动作是否在本帧刚刚按下
+        bool isActionReleased(const std::string &action_name) const; // 动作是否在本帧刚刚释放
 
         bool shouldQuit() const;              // 查询退出状态
         void setShouldQuit(bool should_quit); // 设置退出状态
@@ -55,9 +55,9 @@ namespace engine::input
         void processEvent(const SDL_Event &event);                   // 处理 SDL 事件（将按键转换为动作状态）
         void initializeMappings(const engine::core::Config *config); // 根据 Config配置初始化映射表
 
-        void updateActionState(std::string action_name, bool is_input_active, bool is_repeat_event); // 辅助更新动作状态
-        SDL_Scancode scancodeFromString(std::string key_name);                                       // 将字符串键名转换为 SDL_Scancode
-        Uint32 mouseButtonUint32FromString(std::string button_name);                                 // 将字符串按钮名转换为 SDL_Button
+        void updateActionState(const std::string &action_name, bool is_input_active, bool is_repeat_event); // 辅助更新动作状态
+        SDL_Scancode scancodeFromString(const std::string &key_name);                                       // 将字符串键名转换为 SDL_Scancode
+        Uint32 mouseButtonUint32FromString(const std::string &button_name);                                 // 将字符串按钮名转换为 SDL_Button
     };
 
 } // namespace engine::input

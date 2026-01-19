@@ -6,11 +6,11 @@
 
 namespace engine::core
 {
-    Config::Config(std::string filepath)
+    Config::Config(const std::string &filepath)
     {
         loadFromFile(filepath);
     }
-    bool Config::loadFromFile(std::string filepath)
+    bool Config::loadFromFile(const std::string &filepath)
     {
         std::ifstream file(filepath);
         if (!file.is_open())
@@ -38,7 +38,7 @@ namespace engine::core
         }
         return false;
     }
-    bool Config::saveToFile(std::string filepath)
+    bool Config::saveToFile(const std::string &filepath)
     {
         std::ofstream file(filepath);
         if (!file.is_open())

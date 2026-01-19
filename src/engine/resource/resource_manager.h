@@ -56,9 +56,9 @@ namespace engine::resource
         void clearMusic();                                  // 清理所有音乐资源
 
         // Fonts
-        TTF_Font *loadFont(std::string file_path, int point_size); // 载入字体资源
-        TTF_Font *getFont(std::string file_path, int point_size);  // 获取已经加载字体资源的指针，无的尝试加载
-        void unloadFont(std::string file_path, int point_size);    // 卸载字体资源
-        void clearFonts();                                         // 清理所有字体资源
+        TTF_Font *loadFont(const std::string &file_path, int point_size); // 载入字体资源
+        TTF_Font *getFont(const std::string &file_path, int point_size);  // 获取已经加载字体资源的指针，无的尝试加载
+        void unloadFont(const std::string &file_path, int point_size);    // 卸载字体资源
+        void clearFonts();                                                // 清理所有字体资源
     };
 };

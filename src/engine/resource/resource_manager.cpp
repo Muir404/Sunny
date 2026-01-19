@@ -87,15 +87,15 @@ namespace engine::resource
     }
 
     // 字体接口
-    TTF_Font *ResourceManager::loadFont(std::string file_path, int point_size)
+    TTF_Font *ResourceManager::loadFont(const std::string &file_path, int point_size)
     {
         return font_manager_->loadFont(file_path, point_size);
     }
-    TTF_Font *ResourceManager::getFont(std::string file_path, int point_size)
+    TTF_Font *ResourceManager::getFont(const std::string &file_path, int point_size)
     {
         return font_manager_->getFont(file_path, point_size);
     }
-    void ResourceManager::unloadFont(std::string file_path, int point_size)
+    void ResourceManager::unloadFont(const std::string &file_path, int point_size)
     {
         font_manager_->unloadFont(file_path, point_size);
     }

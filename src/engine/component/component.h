@@ -5,6 +5,11 @@ namespace engine::object
     class GameObject;
 }
 
+namespace engine::core
+{
+    class Context;
+}
+
 namespace engine::component
 {
     class Component
@@ -29,11 +34,11 @@ namespace engine::component
 
     protected:
         // 关键循环函数，全部设为保护，只有 GameObject 需要（可以）调用
-        virtual void init() {}         // 保留两段初始化的机制，GameObject 添加组件时自动调用，不需要外部调用
-        virtual void handleInput() {}  // 处理输入
-        virtual void update(float) {}; // 更新，必须实现
-        virtual void render() {}       // 渲染
-        virtual void clean() {}        // 清理
+        virtual void init() {}                                  // 保留两段初始化的机制，GameObject 添加组件时自动调用，不需要外部调用
+        virtual void handleInput(engine::core::Context &) {}    // 处理输入
+        virtual void update(float, engine::core::Context &) {}; // 更新，必须实现
+        virtual void render(engine::core::Context &) {}         // 渲染
+        virtual void clean() {}                                 // 清理
     };
 
 } // namespace engine::component

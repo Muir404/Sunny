@@ -35,6 +35,6 @@ namespace engine::render
         Camera &operator=(Camera &&) = delete;
 
     private:
-        void clampPosition(); //限制相机位置在边界内
+        void clampPosition(); // 限制相机位置在边界内
     };
 }
