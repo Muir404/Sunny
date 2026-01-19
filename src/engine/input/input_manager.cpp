@@ -7,7 +7,7 @@
 
 namespace engine::input
 {
-    InputManager::InputManager(SDL_Renderer *sdl_renderer, const engine::core::Config *config)
+    InputManager::InputManager(SDL_Renderer *sdl_renderer, const engine::core::Config *config) : sdl_renderer_(sdl_renderer)
     {
         if (!sdl_renderer_)
         {

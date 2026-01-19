@@ -73,5 +73,6 @@ namespace engine::core // 命名空间与路径一致
         void testRenderer();
         void testCamera();
         void testInputManager();
+        void testGameObject();
     };
 } // namespace engine::core

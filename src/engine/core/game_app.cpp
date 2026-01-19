@@ -7,6 +7,7 @@
 #include <SDL3/SDL.h>
 #include "config.h"
 #include "../input/input_manager.h"
+#include "../object/game_object.h"
 
 namespace engine::core // 命名空间与路径一致
 {
@@ -86,9 +87,12 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
+        // 测试资源管理器
         testResourceManager();
 
         is_running_ = true; // 设置为运行状态
+        spdlog::trace("GameApp初始化成功");
+        testGameObject();
         return true;
     }
 
@@ -330,20 +334,25 @@ namespace engine::core // 命名空间与路径一致
             "pause",
             "MouseLeftClick",
             "MouseRightClick"};
-        for (const auto &action : actions)
-        {
-            if (input_manager_->isActionPressed(action))
-            {
-                spdlog::info("{} 按下 ", action);
-            }
-            if (input_manager_->isActionReleased(action))
-            {
-                spdlog::info("{} 抬起 ", action);
-            }
-            if (input_manager_->isActionDown(action))
-            {
-                spdlog::info("{} 按下 中 ", action);
-            }
-        }
+        // for (const auto &action : actions)
+        // {
+        //     if (input_manager_->isActionPressed(action))
+        //     {
+        //         spdlog::info("{} 按下 ", action);
+        //     }
+        //     if (input_manager_->isActionReleased(action))
+        //     {
+        //         spdlog::info("{} 抬起 ", action);
+        //     }
+        //     if (input_manager_->isActionDown(action))
+        //     {
+        //         spdlog::info("{} 按下 中 ", action);
+        //     }
+        // }
+    }
+    void GameApp::testGameObject()
+    {
+        engine::object::GameObject game_object("test_game_object");
+        game_object.addComponent<engine::component::Component>();
     }
 }
