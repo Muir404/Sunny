@@ -1,20 +1,29 @@
 #include "game_app.h"
 #include "time.h"
 #include "context.h"
+#include "config.h"
+
 #include "../resource/resource_manager.h"
+
 #include "../render/camera.h"
 #include "../render/renderer.h"
+
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL.h>
-#include "config.h"
+
 #include "../input/input_manager.h"
 #include "../object/game_object.h"
+
 #include "../component/sprite_component.h"
 #include "../component/transform_component.h"
 
+#include "../scene/scene_manager.h"
+
+#include "../../game/scene/game_scene.h"
+
 namespace engine::core // 命名空间与路径一致
 {
-    engine::object::GameObject game_object("test_game_object");
+    // engine::object::GameObject game_object("test_game_object");
 
     GameApp::GameApp() = default;
 
@@ -97,12 +106,21 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
+        if (!initSceneManager())
+        {
+            return false;
+        }
+
         // 测试资源管理器
-        testResourceManager();
+        // testResourceManager();
+
+        // 创建第一个场景并压入栈
+        auto scene = std::make_unique<game::scene::GameScene>("GameScene", *context_, *scene_manager_);
+        scene_manager_->requestPushScene(std::move(scene));
 
         is_running_ = true; // 设置为运行状态
         spdlog::trace("GameApp初始化成功");
-        testGameObject();
+        // testGameObject();
         return true;
     }
 
@@ -124,13 +142,14 @@ namespace engine::core // 命名空间与路径一致
             return;
         }
 
-        testInputManager();
+        // testInputManager();
     }
 
-    void GameApp::update(float /*delta_time*/)
+    void GameApp::update(float delta_time)
     {
         // TODO 游戏逻辑更新
-        testCamera();
+        // testCamera();
+        scene_manager_->update(delta_time);
     }
 
     void GameApp::render()
@@ -140,8 +159,9 @@ namespace engine::core // 命名空间与路径一致
         renderer_->clearScreen();
 
         // 2. render
-        testRenderer();
-        game_object.render(*context_);
+        // testRenderer();
+        // game_object.render(*context_);
+        scene_manager_->render();
 
         // 3. update the screen
         renderer_->present();
@@ -308,79 +328,94 @@ namespace engine::core // 命名空间与路径一致
         return true;
     }
 
-    void GameApp::testResourceManager()
+    bool GameApp::initSceneManager()
     {
-        resource_manager_->getTexture("assets/textures/Actors/eagle-attack.png"); // 加载纹理资源
-        resource_manager_->getFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 加载字体资源（带字号参数）
-        resource_manager_->getSound("assets/audio/button_click.wav");             // 加载音频资源
-
-        resource_manager_->unloadTexture("assets/textures/Actors/eagle-attack.png"); // 卸载纹理资源
-        resource_manager_->unloadFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 卸载字体资源
-        resource_manager_->unloadSound("assets/audio/button_click.wav");             // 卸载音频资源
+        try
+        {
+            scene_manager_ = std::make_unique<engine::scene::SceneManager>(*context_);
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::trace("场景管理器初始化失败", e.what());
+            return false;
+        }
+        spdlog::trace("场景管理器初始化成功");
+        return true;
     }
 
-    void GameApp::testRenderer()
-    {
-        // 精灵对象定义
-        engine::render::Sprite sprite_world("assets/textures/Actors/frog.png");
-        engine::render::Sprite sprite_ui("assets/textures/UI/buttons/Start1.png");
-        engine::render::Sprite sprite_parallax("assets/textures/Layers/back.png");
+    // void GameApp::testResourceManager()
+    // {
+    //     resource_manager_->getTexture("assets/textures/Actors/eagle-attack.png"); // 加载纹理资源
+    //     resource_manager_->getFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 加载字体资源（带字号参数）
+    //     resource_manager_->getSound("assets/audio/button_click.wav");             // 加载音频资源
 
-        // 旋转变量
-        static float rotation = 0.0f;
-        rotation += 0.1f;
+    //     resource_manager_->unloadTexture("assets/textures/Actors/eagle-attack.png"); // 卸载纹理资源
+    //     resource_manager_->unloadFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);    // 卸载字体资源
+    //     resource_manager_->unloadSound("assets/audio/button_click.wav");             // 卸载音频资源
+    // }
 
-        // 渲染调用 (注意渲染顺序)
-        renderer_->drawParallax(*camera_, sprite_parallax, glm::vec2(100, 100), glm::vec2(0.5f, 0.5f), glm::bvec2{true, true});
-        renderer_->drawSprite(*camera_, sprite_world, glm::vec2(200, 200), glm::vec2(1.0f, 1.0f), rotation);
-        renderer_->drawUISprite(sprite_ui, glm::vec2(100, 100));
-    }
+    // void GameApp::testRenderer()
+    // {
+    //     // 精灵对象定义
+    //     engine::render::Sprite sprite_world("assets/textures/Actors/frog.png");
+    //     engine::render::Sprite sprite_ui("assets/textures/UI/buttons/Start1.png");
+    //     engine::render::Sprite sprite_parallax("assets/textures/Layers/back.png");
 
-    void GameApp::testCamera()
-    {
-        auto key_state = SDL_GetKeyboardState(nullptr);
-        if (key_state[SDL_SCANCODE_UP])
-            camera_->move(glm::vec2(0, -1));
-        if (key_state[SDL_SCANCODE_DOWN])
-            camera_->move(glm::vec2(0, 1));
-        if (key_state[SDL_SCANCODE_LEFT])
-            camera_->move(glm::vec2(-1, 0));
-        if (key_state[SDL_SCANCODE_RIGHT])
-            camera_->move(glm::vec2(1, 0));
-    }
-    void GameApp::testInputManager()
-    {
-        std::vector<std::string> actions = {
-            "move_up",
-            "move_down",
-            "move_left",
-            "move_right",
-            "jump",
-            "attack",
-            "pause",
-            "MouseLeftClick",
-            "MouseRightClick"};
-        // for (const auto &action : actions)
-        // {
-        //     if (input_manager_->isActionPressed(action))
-        //     {
-        //         spdlog::info("{} 按下 ", action);
-        //     }
-        //     if (input_manager_->isActionReleased(action))
-        //     {
-        //         spdlog::info("{} 抬起 ", action);
-        //     }
-        //     if (input_manager_->isActionDown(action))
-        //     {
-        //         spdlog::info("{} 按下 中 ", action);
-        //     }
-        // }
-    }
-    void GameApp::testGameObject()
-    {
-        game_object.addComponent<engine::component::TransformComponent>(glm::vec2(100, 100));
-        game_object.addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", *resource_manager_, engine::utils::Alignment::CENTER);
-        game_object.addComponent<engine::component::TransformComponent>()->setScale(glm::vec2(2.0f, 2.0f));
-        game_object.addComponent<engine::component::TransformComponent>()->setRotation(30.0f);
-    }
+    //     // 旋转变量
+    //     static float rotation = 0.0f;
+    //     rotation += 0.1f;
+
+    //     // 渲染调用 (注意渲染顺序)
+    //     renderer_->drawParallax(*camera_, sprite_parallax, glm::vec2(100, 100), glm::vec2(0.5f, 0.5f), glm::bvec2{true, true});
+    //     renderer_->drawSprite(*camera_, sprite_world, glm::vec2(200, 200), glm::vec2(1.0f, 1.0f), rotation);
+    //     renderer_->drawUISprite(sprite_ui, glm::vec2(100, 100));
+    // }
+
+    // void GameApp::testCamera()
+    // {
+    //     auto key_state = SDL_GetKeyboardState(nullptr);
+    //     if (key_state[SDL_SCANCODE_UP])
+    //         camera_->move(glm::vec2(0, -1));
+    //     if (key_state[SDL_SCANCODE_DOWN])
+    //         camera_->move(glm::vec2(0, 1));
+    //     if (key_state[SDL_SCANCODE_LEFT])
+    //         camera_->move(glm::vec2(-1, 0));
+    //     if (key_state[SDL_SCANCODE_RIGHT])
+    //         camera_->move(glm::vec2(1, 0));
+    // }
+    // void GameApp::testInputManager()
+    // {
+    //     std::vector<std::string> actions = {
+    //         "move_up",
+    //         "move_down",
+    //         "move_left",
+    //         "move_right",
+    //         "jump",
+    //         "attack",
+    //         "pause",
+    //         "MouseLeftClick",
+    //         "MouseRightClick"};
+    //     // for (const auto &action : actions)
+    //     // {
+    //     //     if (input_manager_->isActionPressed(action))
+    //     //     {
+    //     //         spdlog::info("{} 按下 ", action);
+    //     //     }
+    //     //     if (input_manager_->isActionReleased(action))
+    //     //     {
+    //     //         spdlog::info("{} 抬起 ", action);
+    //     //     }
+    //     //     if (input_manager_->isActionDown(action))
+    //     //     {
+    //     //         spdlog::info("{} 按下 中 ", action);
+    //     //     }
+    //     // }
+    // }
+    // void GameApp::testGameObject()
+    // {
+    //     game_object.addComponent<engine::component::TransformComponent>(glm::vec2(100, 100));
+    //     game_object.addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png", *resource_manager_, engine::utils::Alignment::CENTER);
+    //     game_object.addComponent<engine::component::TransformComponent>()->setScale(glm::vec2(2.0f, 2.0f));
+    //     game_object.addComponent<engine::component::TransformComponent>()->setRotation(30.0f);
+    // }
 }

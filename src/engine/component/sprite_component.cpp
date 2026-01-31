@@ -146,6 +146,7 @@ namespace engine::component
         }
         else
         {
+            // 整个纹理就是精灵图大小
             sprite_size_ = resource_manager_->getTextureSize(sprite_.getTextureId());
         }
     }
