@@ -5,9 +5,12 @@
 #include "../../engine/input/input_manager.h"
 
 #include "../../engine/scene/scene_manager.h"
+#include "../../engine/scene/level_loader.h"
 
 #include "../../engine/component/transform_component.h"
 #include "../../engine/component/sprite_component.h"
+
+#include "../../engine/render/camera.h"
 
 #include "game_scene.h"
 
@@ -23,6 +26,10 @@ namespace game::scene
     }
     void GameScene::init()
     {
+        // 加载关卡
+        engine::scene::LevelLoader level_loader;
+        level_loader.loadLevel("assets/maps/level1.tmj", *this);
+
         createTestObject();
 
         Scene::init();
@@ -39,6 +46,7 @@ namespace game::scene
     void GameScene::handleInput()
     {
         Scene::handleInput();
+        testCamera();
     }
     void GameScene::clean()
     {
@@ -58,5 +66,26 @@ namespace game::scene
         addGameObject(std::move(test_object));
 
         spdlog::trace("test_object 创建并添加到 GameScene 中.");
+    }
+    void GameScene::testCamera()
+    {
+        auto &camera = context_.getCamera();
+        auto &input_manager = context_.getInputManager();
+        if (input_manager.isActionDown("move_up"))
+        {
+            camera.move(glm::vec2(0, -1));
+        }
+        if (input_manager.isActionDown("move_down"))
+        {
+            camera.move(glm::vec2(0, 1));
+        }
+        if (input_manager.isActionDown("move_left"))
+        {
+            camera.move(glm::vec2(-1, 0));
+        }
+        if (input_manager.isActionDown("move_right"))
+        {
+            camera.move(glm::vec2(1, 0));
+        }
     }
 }

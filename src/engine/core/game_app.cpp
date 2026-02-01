@@ -141,7 +141,8 @@ namespace engine::core // 命名空间与路径一致
             is_running_ = false;
             return;
         }
-
+        
+        scene_manager_->handleInput();
         // testInputManager();
     }
 

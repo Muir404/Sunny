@@ -313,6 +313,7 @@ find_or_fetch_dependency(
 
 # 设置通用源文件
 set(SOURCES
+    # engine
     src/main.cpp
     src/engine/core/game_app.cpp
     src/engine/core/time.cpp
@@ -334,10 +335,13 @@ set(SOURCES
 
     src/engine/component/sprite_component.cpp
     src/engine/component/transform_component.cpp
+    src/engine/component/parallax_component.cpp
 
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
+    src/engine/scene/level_loader.cpp
     
+    # game
     src/game/scene/game_scene.cpp
     )
 
