@@ -14,6 +14,8 @@ namespace engine::render
         bool is_flipped_ = false;              // 是否水平翻转
 
     public:
+        Sprite() = default;
+
         Sprite(const std::string &texture_id, const std::optional<SDL_FRect> &source_rect = std::nullopt, bool is_flipped = false)
             : texture_id_(texture_id),
               source_rect_(source_rect),

@@ -3,6 +3,7 @@
 #include "../component/parallax_component.h"
 #include "../component/transform_component.h"
 #include "../component/sprite_component.h"
+#include "../component/tilelayer_component.h"
 
 #include "../scene/scene.h"
 
@@ -26,12 +27,12 @@ namespace engine::scene
 {
     bool LevelLoader::loadLevel(const std::string &level_path, Scene &scene)
     {
-        map_path_ = level_path;
         // 1. 加载 JSON 文件
-        std::ifstream file(level_path);
+        auto path = std::filesystem::path(level_path);
+        std::ifstream file(path);
         if (!file.is_open())
         {
-            spdlog::error("无法打开关卡文件:{}", level_path);
+            spdlog::error("无法打开关卡文件: {}", level_path);
             return false;
         }
 
@@ -48,13 +49,33 @@ namespace engine::scene
         }
 
         // 3. 获取基本地图信息 (名称、地图尺寸、瓦片尺寸)
-        if (!json_data.contains("layers") || !json_data["layers"].is_array())
+        map_path_ = level_path;
+        map_size_ = glm::ivec2(json_data.value("width", 0), json_data.value("height", 0));
+        tile_size_ = glm::ivec2(json_data.value("tilewidth", 0), json_data.value("tileheight", 0));
+
+        // 4. 加载 tileset 数据
+        if (json_data.contains("tilesets") && json_data["tilesets"].is_array())
         {
-            // 地图文件中必须有 layers 数组
+            for (const auto &tileset_json : json_data["tilesets"])
+            {
+                if (!tileset_json.contains("source") || !tileset_json["source"].is_string() ||
+                    !tileset_json.contains("firstgid") || !tileset_json["firstgid"].is_number_integer())
+                {
+                    spdlog::error("tilesets 对象中缺少有效 'source' 或 'firstgid' 字段。");
+                    continue;
+                }
+                auto tileset_path = resolvePath(tileset_json["source"].get<std::string>(), map_path_); // 支持隐式转换，可以省略.get<T>()方法，
+                auto first_gid = tileset_json["firstgid"].get<int>();
+                loadTileset(tileset_path, first_gid);
+            }
+        }
+
+        // 5. 加载图层数据
+        if (!json_data.contains("layers") || !json_data["layers"].is_array())
+        { // 地图文件中必须有 layers 数组
             spdlog::error("地图文件 '{}' 中缺少或无效的 'layers' 数组。", level_path);
             return false;
         }
-
         for (const auto &layer_json : json_data["layers"])
         {
             // 获取各图层对象中的类型（type）字段
@@ -98,7 +119,7 @@ namespace engine::scene
             spdlog::error("图层 '{}' 缺少 'image' 属性。", layer_json.value("name", "Unnamed"));
             return;
         }
-        auto texture_id = resolvePath(image_path);
+        auto texture_id = resolvePath(image_path, map_path_);
 
         // 获取图层偏移量（json中没有则代表未设置，给默认值即可）
         const glm::vec2 offset = glm::vec2(layer_json.value("offsetx", 0.0f), layer_json.value("offsety", 0.0f));
@@ -110,7 +131,7 @@ namespace engine::scene
         // 获取图层名称
         std::string layer_name = layer_json.value("name", "Unnamed");
 
-        /*  可用类似方法获取其它各种属性，这里我们暂时用不上 */
+        /*  可用类似方法获取其它各种属性，这里暂时用不上 */
 
         // 创建游戏对象
         auto game_object = std::make_unique<engine::object::GameObject>(layer_name);
@@ -124,27 +145,321 @@ namespace engine::scene
 
     void LevelLoader::loadTileLayer(const nlohmann::json &layer_json, Scene &scene)
     {
+        if (!layer_json.contains("data") || !layer_json["data"].is_array())
+        {
+            spdlog::error("图层 '{}' 缺少 'data' 属性。", layer_json.value("name", "Unnamed"));
+            return;
+        }
+        // 准备 TileInfo Vector (瓦片数量 = 地图宽度 * 地图高度)
+        std::vector<engine::component::TileInfo> tiles;
+        tiles.reserve(map_size_.x * map_size_.y);
+
+        // 获取图层数据 (瓦片 ID 列表)
+        const auto &data = layer_json["data"];
+
+        // 根据gid获取必要信息，并依次填充 TileInfo Vector
+        for (const auto &gid : data)
+        {
+            tiles.push_back(getTileInfoByGid(gid));
+        }
+
+        // 获取图层名称
+        std::string layer_name = layer_json.value("name", "Unnamed");
+        // 创建游戏对象
+        auto game_object = std::make_unique<engine::object::GameObject>(layer_name);
+        // 添加Tilelayer组件
+        game_object->addComponent<engine::component::TileLayerComponent>(tile_size_, map_size_, std::move(tiles));
+        // 添加到场景中
+        scene.addGameObject(std::move(game_object));
+        spdlog::info("加载瓦片图层: '{}' 完成", layer_name);
     }
 
     void LevelLoader::loadObjectLayer(const nlohmann::json &layer_json, Scene &scene)
     {
+        // TODO
+        if (!layer_json.contains("objects") || !layer_json["objects"].is_array())
+        {
+            spdlog::error("对象图层'{}'缺少'objects'属性", layer_json.value("name", "Unnamed"));
+            return;
+        }
+        // 获取对象数据
+        const auto &objects = layer_json["objects"];
+        // 遍历对象数据
+        for (const auto &object : objects)
+        {
+            // 获取对象gid
+            auto gid = object.value("gid", 0);
+            if (gid == 0)
+            {
+                // 如果gid为0 (即不存在)，则代表自己绘制的形状
+                // TODO
+                // // 非矩形对象会有额外标识（目前不考虑）
+                // if (object.value("point", false))
+                // {             // 如果是点对象
+                //     continue; // TODO: 点对象的处理方式
+                // }
+                // else if (object.value("ellipse", false))
+                // {             // 如果是椭圆对象
+                //     continue; // TODO: 椭圆对象的处理方式
+                // }
+                // else if (object.value("polygon", false))
+                // {             // 如果是多边形对象
+                //     continue; // TODO: 多边形对象的处理方式
+                // }
+                // // 没有这些标识则默认是矩形对象
+                // else
+                // {
+                // }
+            }
+            else
+            { // 如果gid存在，则按照图片解析流程
+                // --- 根据gid获取必要信息，每个gid对应一个游戏对象 ---
+                auto tile_info = getTileInfoByGid(gid);
+                if (tile_info.sprite.getTextureId().empty())
+                {
+                    spdlog::error("gid为 {} 的瓦片没有图像纹理。", gid);
+                    continue;
+                }
+
+                // 获取Transform相关信息
+                auto position = glm::vec2(object.value("x", 0.0f), object.value("y", 0.0f));
+                auto dst_size = glm::vec2(object.value("width", 0.0f), object.value("height", 0.0f));
+                position = glm::vec2(position.x, position.y - dst_size.y); // 实际position需要进行调整(左下角到左上角) 渲染区域
+                // Tiled坐标与渲染坐标有差异，Tiled是左下角，渲染是左上角
+
+                auto rotation = object.value("rotation", 0.0f);
+                auto src_size_opt = tile_info.sprite.getSourceRect();
+                if (!src_size_opt)
+                { // 正常情况下，所有瓦片的Sprite都设置了源矩形，没有代表某处出错
+                    spdlog::error("gid为 {} 的瓦片没有源矩形。", gid);
+                    continue;
+                }
+                auto src_size = glm::vec2(src_size_opt->w, src_size_opt->h); // 成员变量除了 value().w 外，也可以这样获取
+                auto scale = dst_size / src_size;
+
+                // 获取对象名称
+                std::string object_name = object.value("name", "Unnamed");
+
+                // 创建游戏对象并添加组件
+                auto game_object = std::make_unique<engine::object::GameObject>(object_name);
+                game_object->addComponent<engine::component::TransformComponent>(position, scale, rotation);
+                game_object->addComponent<engine::component::SpriteComponent>(std::move(tile_info.sprite), scene.getContext().getResourceManager());
+
+                // 添加到场景中
+                scene.addGameObject(std::move(game_object));
+                spdlog::info("加载对象:'{}'完成",object_name);
+            }
+        }
     }
 
-    std::string LevelLoader::resolvePath(std::string image_path)
+    engine::component::TileType LevelLoader::getTileType(const nlohmann::json &tile_json)
+    {
+        if (tile_json.contains("properties"))
+        {
+            auto &properties = tile_json["properties"];
+            for (auto &property : properties)
+            {
+                if (property.contains("name") && property["name"] == "solid")
+                {
+                    auto is_solid = property.value("value", false);
+                    return is_solid ? engine::component::TileType::SOLID : engine::component::TileType::NORMAL;
+                }
+                else if (property.contains("name") && property["name"] == "slope")
+                {
+                    auto slope_type = property.value("value", "");
+                    if (slope_type == "0_1")
+                    {
+                        return engine::component::TileType::SLOPE_0_1;
+                    }
+                    else if (slope_type == "1_0")
+                    {
+                        return engine::component::TileType::SLOPE_1_0;
+                    }
+                    else if (slope_type == "0_2")
+                    {
+                        return engine::component::TileType::SLOPE_0_2;
+                    }
+                    else if (slope_type == "2_0")
+                    {
+                        return engine::component::TileType::SLOPE_2_0;
+                    }
+                    else if (slope_type == "2_1")
+                    {
+                        return engine::component::TileType::SLOPE_2_1;
+                    }
+                    else if (slope_type == "1_2")
+                    {
+                        return engine::component::TileType::SLOPE_1_2;
+                    }
+                    else
+                    {
+                        spdlog::error("未知的斜坡类型: {}", slope_type);
+                        return engine::component::TileType::NORMAL;
+                    }
+                }
+                else if (property.contains("name") && property["name"] == "unisolid")
+                {
+                    auto is_unisolid = property.value("value", false);
+                    return is_unisolid ? engine::component::TileType::UNISOLID : engine::component::TileType::NORMAL;
+                }
+                else if (property.contains("name") && property["name"] == "hazard")
+                {
+                    auto is_hazard = property.value("value", false);
+                    return is_hazard ? engine::component::TileType::HAZARD : engine::component::TileType::NORMAL;
+                }
+                else if (property.contains("name") && property["name"] == "ladder")
+                {
+                    auto is_ladder = property.value("value", false);
+                    return is_ladder ? engine::component::TileType::LADDER : engine::component::TileType::NORMAL;
+                }
+                // TODO: 可以在这里添加更多的自定义属性处理逻辑
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
+
+    engine::component::TileType LevelLoader::getTileTypeById(const nlohmann::json &tileset_json, int local_id)
+    {
+        if (tileset_json.contains("tiles"))
+        {
+            auto &tiles = tileset_json["tiles"];
+            for (auto &tile : tiles)
+            {
+                if (tile.contains("id") && tile["id"] == local_id)
+                {
+                    return getTileType(tile);
+                }
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
+
+    engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid)
+    {
+        if (gid == 0)
+        {
+            return engine::component::TileInfo();
+        }
+
+        // upper_bound：查找tileset_data_中键大于 gid 的第一个元素，返回迭代器
+        auto tileset_it = tileset_data_.upper_bound(gid);
+        if (tileset_it == tileset_data_.begin())
+        {
+            spdlog::error("gid为 {} 的瓦片未找到图块集。", gid);
+            return engine::component::TileInfo();
+        }
+        --tileset_it; // 前移一个位置，这样就得到不大于gid的最近一个元素（我们需要的）
+
+        const auto &tileset = tileset_it->second;
+        auto local_id = gid - tileset_it->first;                // 计算瓦片在图块集中的局部ID
+        std::string file_path = tileset.value("file_path", ""); // 获取图块集文件路径
+        if (file_path.empty())
+        {
+            spdlog::error("Tileset 文件 '{}' 缺少 'file_path' 属性。", tileset_it->first);
+            return engine::component::TileInfo();
+        }
+        // 图块集分为两种情况，需要分别考虑
+        if (tileset.contains("image"))
+        {
+            // 这是单一图片的情况
+            // 获取图片路径
+            auto texture_id = resolvePath(tileset["image"].get<std::string>(), file_path);
+            // 计算瓦片在图片网格中的坐标
+            auto coordinate_x = local_id % tileset["columns"].get<int>();
+            auto coordinate_y = local_id / tileset["columns"].get<int>();
+            // 根据坐标确定源矩形
+            SDL_FRect texture_rect = {
+                static_cast<float>(coordinate_x * tile_size_.x),
+                static_cast<float>(coordinate_y * tile_size_.y),
+                static_cast<float>(tile_size_.x),
+                static_cast<float>(tile_size_.y)};
+            engine::render::Sprite sprite{texture_id, texture_rect};
+            // auto tile_type = getTileTypeById(tileset, local_id); // 获取瓦片类型（只有瓦片id，还没找具体瓦片json）
+            return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);
+        }
+        else
+        {
+            // 这是多图片的情况
+            if (!tileset.contains("tiles"))
+            { // 没有tiles字段的话不符合数据格式要求，直接返回空的瓦片信息
+                spdlog::error("Tileset 文件 '{}' 缺少 'tiles' 属性。", tileset_it->first);
+                return engine::component::TileInfo();
+            }
+            // 遍历tiles数组，根据id查找对应的瓦片
+            const auto &tiles_json = tileset["tiles"];
+            for (const auto &tile_json : tiles_json)
+            {
+                auto tile_id = tile_json.value("id", 0);
+                if (tile_id == local_id)
+                { // 找到对应的瓦片，进行后续操作
+                    if (!tile_json.contains("image"))
+                    { // 没有image字段的话不符合数据格式要求，直接返回空的瓦片信息
+                        spdlog::error("Tileset 文件 '{}' 中瓦片 {} 缺少 'image' 属性。", tileset_it->first, tile_id);
+                        return engine::component::TileInfo();
+                    }
+                    // --- 接下来根据必要信息创建并返回 TileInfo ---
+                    // 获取图片路径
+                    auto texture_id = resolvePath(tile_json["image"].get<std::string>(), file_path);
+                    // 先确认图片尺寸
+                    auto image_width = tile_json.value("imagewidth", 0);
+                    auto image_height = tile_json.value("imageheight", 0);
+                    // 从json中获取源矩形信息
+                    SDL_FRect texture_rect = {// tiled中源矩形信息只有设置了才会有值，没有就是默认值
+                                              static_cast<float>(tile_json.value("x", 0)),
+                                              static_cast<float>(tile_json.value("y", 0)),
+                                              static_cast<float>(tile_json.value("width", image_width)), // 如果未设置，则使用图片尺寸
+                                              static_cast<float>(tile_json.value("height", image_height))};
+                    engine::render::Sprite sprite{texture_id, texture_rect};
+                    // auto tile_type = getTileType(tile_json); // 获取瓦片类型（已经有具体瓦片json了）
+                    return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);
+                }
+            }
+        }
+        // 如果能走到这里，说明查找失败，返回空的瓦片信息
+        spdlog::error("图块集 '{}' 中未找到gid为 {} 的瓦片。", tileset_it->first, gid);
+        return engine::component::TileInfo();
+    }
+
+    void LevelLoader::loadTileset(const std::string &tileset_path, int first_gid)
+    {
+        auto path = std::filesystem::path(tileset_path);
+        std::ifstream tileset_file(path);
+        if (!tileset_file.is_open())
+        {
+            spdlog::error("无法打开 Tileset 文件: {}", tileset_path);
+            return;
+        }
+
+        nlohmann::json ts_json;
+        try
+        {
+            tileset_file >> ts_json;
+        }
+        catch (const nlohmann::json::parse_error &e)
+        {
+            spdlog::error("解析 Tileset JSON 文件 '{}' 失败: {} (at byte {})", tileset_path, e.what(), e.byte);
+            return;
+        }
+        ts_json["file_path"] = tileset_path; // 将文件路径存储到json中，后续解析图片路径时需要
+        tileset_data_[first_gid] = std::move(ts_json);
+        spdlog::info("Tileset 文件 '{}' 加载完成，firstgid: {}", tileset_path, first_gid);
+    }
+
+    std::string LevelLoader::resolvePath(const std::string &relative_path, const std::string &file_path)
     {
         try
         {
             // 获取地图文件的父目录（相对于可执行文件） "assets/maps/level1.tmj" -> "assets/maps"
-            auto map_dir = std::filesystem::path(map_path_).parent_path();
+            auto map_dir = std::filesystem::path(file_path).parent_path();
             // 合并路径（相对于可执行文件）并返回。 /* std::filesystem::canonical：解析路径中的当前目录（.）和上级目录（..）导航符，
             /*  得到一个干净的路径 */
-            auto final_path = std::filesystem::canonical(map_dir / image_path);
+            auto final_path = std::filesystem::canonical(map_dir / relative_path);
             return final_path.string();
         }
         catch (const std::exception &e)
         {
             spdlog::error("解析路径失败: {}", e.what());
-            return image_path;
+            return std::string(relative_path);
         }
     }
 
