@@ -313,36 +313,47 @@ find_or_fetch_dependency(
 
 # 设置通用源文件
 set(SOURCES
-    # engine
+    # main
     src/main.cpp
+
+    # engine-core
     src/engine/core/game_app.cpp
     src/engine/core/time.cpp
     src/engine/core/config.cpp
     src/engine/core/context.cpp
 
+    # engine-resource
     src/engine/resource/resource_manager.cpp
     src/engine/resource/font_manager.cpp
     src/engine/resource/audio_manager.cpp
     src/engine/resource/texture_manager.cpp
 
+    # engine-render
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
 
+    # engine-input
     src/engine/input/input_manager.cpp
-
     src/engine/object/game_object.cpp
 
+    # engine-physics
+    src/engine/physics/physics_engine.cpp
+    src/engine/physics/collision.cpp
 
+    # engine-component
     src/engine/component/sprite_component.cpp
     src/engine/component/transform_component.cpp
     src/engine/component/parallax_component.cpp
     src/engine/component/tilelayer_component.cpp
-    
+    src/engine/component/physics_component.cpp
+    src/engine/component/collider_component.cpp
+
+    # engine-scene
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
     src/engine/scene/level_loader.cpp
     
-    # game
+    # game-scene
     src/game/scene/game_scene.cpp
     )
 

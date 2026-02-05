@@ -16,6 +16,11 @@ namespace engine::resource
     class ResourceManager;
 }
 
+namespace engine::physics
+{
+    class PhysicsEngine;
+}
+
 namespace engine::core
 {
     class GameState;
@@ -33,6 +38,7 @@ namespace engine::core
         engine::render::Renderer &renderer_;                  // 渲染器
         engine::render::Camera &camera_;                      // 相机
         engine::resource::ResourceManager &resource_manager_; // 资源管理器
+        engine::physics::PhysicsEngine &physics_engine_;      // 物理引擎
 
     public:
         /**
@@ -46,7 +52,8 @@ namespace engine::core
         Context(engine::input::InputManager &input_manager,
                 engine::render::Renderer &renderer,
                 engine::render::Camera &camera,
-                engine::resource::ResourceManager &resource_manager);
+                engine::resource::ResourceManager &resource_manager,
+                engine::physics::PhysicsEngine &physics_engine_);
 
         // 禁止拷贝和移动，Context 对象通常是唯一的或按需创建/传递
         Context(const Context &) = delete;
@@ -70,6 +77,10 @@ namespace engine::core
         engine::resource::ResourceManager &getResourceManager() const
         {
             return resource_manager_; // 获取资源管理器
+        }
+        engine::physics::PhysicsEngine &getPhysicsEngine() const
+        {
+            return physics_engine_; // 获取物理引擎
         }
     };
 

@@ -22,7 +22,7 @@ namespace engine::resource
         TTF_Quit();
         spdlog::trace("字体管理器析构成功。");
     }
-    TTF_Font *FontManager::loadFont(std::string_view file_path, int point_size)
+    TTF_Font *FontManager::loadFont(const std::string& file_path, int point_size)
     {
         // 检查点大小是否有效
         if (point_size <= 0)
@@ -56,7 +56,7 @@ namespace engine::resource
         return raw_font;
     }
 
-    TTF_Font *FontManager::getFont(std::string_view file_path, int point_size)
+    TTF_Font *FontManager::getFont(const std::string& file_path, int point_size)
     {
         FontKey key = {std::string(file_path), point_size};
         auto it = fonts_.find(key);
@@ -68,7 +68,7 @@ namespace engine::resource
         spdlog::warn("字体 '{}' ({}pt) 不在缓存中，尝试加载。", file_path, point_size);
         return loadFont(file_path, point_size);
     }
-    void FontManager::unloadFont(std::string_view file_path, int point_size)
+    void FontManager::unloadFont(const std::string& file_path, int point_size)
     {
         FontKey key = {std::string(file_path), point_size};
         auto it = fonts_.find(key);

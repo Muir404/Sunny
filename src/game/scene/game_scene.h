@@ -15,6 +15,8 @@ namespace game::scene
      */
     class GameScene final : public engine::scene::Scene
     {
+        engine::object::GameObject *test_object_ = nullptr;
+
     public:
         GameScene(std::string name, engine::core::Context &context, engine::scene::SceneManager &scene_manager);
 
@@ -28,6 +30,8 @@ namespace game::scene
     private:
         void createTestObject();
         void testCamera();
+        void TestObject();
+        void TestCollisionParis();
     };
 
 } // namespace game::scene

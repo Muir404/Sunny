@@ -2,7 +2,7 @@
 #include <memory>        // 用于 std::unique_ptr
 #include <stdexcept>     // 用于 std::runtime_error
 #include <string>        // 用于 std::string
-#include <string_view>   // 用于 std::string_view
+#include <string_view>   // 用于 const std::string&
 #include <unordered_map> // 用于 std::unordered_map
 #include <utility>       // 用于 std::pair
 #include <functional>    // 用于 std::hash
@@ -54,9 +54,9 @@ namespace engine::resource
 
     private:
         // Fonts
-        TTF_Font *loadFont(std::string_view file_path, int point_size); // 载入字体资源
-        TTF_Font *getFont(std::string_view file_path, int point_size);  // 获取已经加载字体资源的指针，无的尝试加载
-        void unloadFont(std::string_view file_path, int point_size);    // 卸载字体资源
+        TTF_Font *loadFont(const std::string& file_path, int point_size); // 载入字体资源
+        TTF_Font *getFont(const std::string& file_path, int point_size);  // 获取已经加载字体资源的指针，无的尝试加载
+        void unloadFont(const std::string& file_path, int point_size);    // 卸载字体资源
         void clearFonts();                                              // 清理所有字体资源
     };
 };

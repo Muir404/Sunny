@@ -5,6 +5,8 @@
 
 #include "../resource/resource_manager.h"
 
+#include "../physics/physics_engine.h"
+
 #include "../render/camera.h"
 #include "../render/renderer.h"
 
@@ -16,6 +18,7 @@
 
 #include "../component/sprite_component.h"
 #include "../component/transform_component.h"
+#include "../component/physics_component.h"
 
 #include "../scene/scene_manager.h"
 
@@ -101,6 +104,11 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
+        if (!initPhysicsEngine())
+        {
+            return false;
+        }
+
         if (!initContext())
         {
             return false;
@@ -141,7 +149,7 @@ namespace engine::core // 命名空间与路径一致
             is_running_ = false;
             return;
         }
-        
+
         scene_manager_->handleInput();
         // testInputManager();
     }
@@ -171,6 +179,8 @@ namespace engine::core // 命名空间与路径一致
     void GameApp::close()
     {
         spdlog::trace("关闭GameApp中");
+        // 先关闭场景管理器，确保所有场景被清理
+        scene_manager_->close();
 
         // 为了确保正确的销毁顺序，有些智能指针对象也需要手动管理
         resource_manager_.reset();
@@ -314,11 +324,26 @@ namespace engine::core // 命名空间与路径一致
         return true;
     }
 
+    bool GameApp::initPhysicsEngine()
+    {
+        try
+        {
+            physics_engine_ = std::make_unique<engine::physics::PhysicsEngine>();
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化物理引擎失败：{}", e.what());
+            return false;
+        }
+        spdlog::trace("物理引擎初始化成功");
+        return true;
+    }
+
     bool GameApp::initContext()
     {
         try
         {
-            context_ = std::make_unique<engine::core::Context>(*input_manager_, *renderer_, *camera_, *resource_manager_);
+            context_ = std::make_unique<engine::core::Context>(*input_manager_, *renderer_, *camera_, *resource_manager_, *physics_engine_);
         }
         catch (const std::exception &e)
         {

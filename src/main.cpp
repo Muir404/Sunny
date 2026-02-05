@@ -4,7 +4,7 @@
 
 int main(int /*argc*/, char * /*argv*/[])
 {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::info);
     spdlog::info("游戏开始");
 
     engine::core::GameApp app;

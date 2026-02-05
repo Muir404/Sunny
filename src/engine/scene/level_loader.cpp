@@ -247,7 +247,7 @@ namespace engine::scene
 
                 // 添加到场景中
                 scene.addGameObject(std::move(game_object));
-                spdlog::info("加载对象:'{}'完成",object_name);
+                spdlog::info("加载对象:'{}'完成", object_name);
             }
         }
     }
@@ -374,8 +374,8 @@ namespace engine::scene
                 static_cast<float>(tile_size_.x),
                 static_cast<float>(tile_size_.y)};
             engine::render::Sprite sprite{texture_id, texture_rect};
-            // auto tile_type = getTileTypeById(tileset, local_id); // 获取瓦片类型（只有瓦片id，还没找具体瓦片json）
-            return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);
+            auto tile_type = getTileTypeById(tileset, local_id); // 获取瓦片类型（只有瓦片id，还没找具体瓦片json）
+            return engine::component::TileInfo(sprite, tile_type);
         }
         else
         {
@@ -410,8 +410,8 @@ namespace engine::scene
                                               static_cast<float>(tile_json.value("width", image_width)), // 如果未设置，则使用图片尺寸
                                               static_cast<float>(tile_json.value("height", image_height))};
                     engine::render::Sprite sprite{texture_id, texture_rect};
-                    // auto tile_type = getTileType(tile_json); // 获取瓦片类型（已经有具体瓦片json了）
-                    return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);
+                    auto tile_type = getTileType(tile_json); // 获取瓦片类型（已经有具体瓦片json了）
+                    return engine::component::TileInfo(sprite, tile_type);
                 }
             }
         }

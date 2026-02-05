@@ -3,7 +3,7 @@
 #include "../core/context.h"
 #include "../render/renderer.h"
 #include "../render/camera.h"
-// #include "../physics/physics_engine.h"
+#include "../physics/physics_engine.h"
 #include <spdlog/spdlog.h>
 
 namespace engine::component
@@ -66,6 +66,10 @@ namespace engine::component
 
     void TileLayerComponent::clean()
     {
+        if (physics_engine_)
+        {
+            physics_engine_->unregisterCollisionLayer(this);
+        }
     }
 
     const TileInfo *TileLayerComponent::getTileInfoAt(glm::ivec2 pos) const

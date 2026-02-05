@@ -17,6 +17,11 @@ namespace engine::core
     class Context;
 }
 
+namespace engine::physics
+{
+    class PhysicsEngine;
+}
+
 namespace engine::component
 {
     /**
@@ -60,13 +65,13 @@ namespace engine::component
         friend class engine::object::GameObject;
 
     private:
-        glm::ivec2 tile_size_;            ///< @brief 单个瓦片尺寸（像素）
-        glm::ivec2 map_size_;             ///< @brief 地图尺寸（瓦片数）
-        std::vector<TileInfo> tiles_;     ///< @brief 存储所有瓦片信息 (按"行主序"存储, index = y * map_width_ + x)
-        glm::vec2 offset_ = {0.0f, 0.0f}; ///< @brief 瓦片层在世界中的偏移量 (瓦片层通常不需要缩放及旋转，因此不引入Transform组件)
-                                          // offset_ 最好也保持默认的0，以免增加不必要的复杂性
-        bool is_hidden_ = false;          ///< @brief 是否隐藏（不渲染）
-        // engine::physics::PhysicsEngine *physics_engine_ = nullptr; ///< @brief 物理引擎的指针， clean()函数中可能需要反注册
+        glm::ivec2 tile_size_;                                     ///< @brief 单个瓦片尺寸（像素）
+        glm::ivec2 map_size_;                                      ///< @brief 地图尺寸（瓦片数）
+        std::vector<TileInfo> tiles_;                              ///< @brief 存储所有瓦片信息 (按"行主序"存储, index = y * map_width_ + x)
+        glm::vec2 offset_ = {0.0f, 0.0f};                          ///< @brief 瓦片层在世界中的偏移量 (瓦片层通常不需要缩放及旋转，因此不引入Transform组件)
+                                                                   // offset_ 最好也保持默认的0，以免增加不必要的复杂性
+        bool is_hidden_ = false;                                   ///< @brief 是否隐藏（不渲染）
+        engine::physics::PhysicsEngine *physics_engine_ = nullptr; ///< @brief 物理引擎的指针， clean()函数中可能需要反注册
 
     public:
         TileLayerComponent() = default;
@@ -113,7 +118,7 @@ namespace engine::component
 
         void setOffset(glm::vec2 offset) { offset_ = std::move(offset); } ///< @brief 设置瓦片层的偏移量
         void setHidden(bool hidden) { is_hidden_ = hidden; }              ///< @brief 设置是否隐藏（不渲染）
-        // void setPhysicsEngine(engine::physics::PhysicsEngine *physics_engine) { physics_engine_ = physics_engine; }
+        void setPhysicsEngine(engine::physics::PhysicsEngine *physics_engine) { physics_engine_ = physics_engine; }
 
     protected:
         // 核心循环方法

@@ -3,6 +3,7 @@
 #include "../object/game_object.h"
 #include "../core/context.h"
 #include "../render/camera.h"
+#include "../physics/physics_engine.h"
 #include <algorithm> // for std::remove_if
 #include <spdlog/spdlog.h>
 
@@ -31,6 +32,9 @@ namespace engine::scene
         {
             return;
         }
+
+        // 先更新物理引擎
+        context_.getPhysicsEngine().update(delta_time);
 
         // 更新所有游戏对象，先略过需要移除的对象
         for (auto it = game_objects_.begin(); it != game_objects_.end();)
