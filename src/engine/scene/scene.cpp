@@ -35,6 +35,8 @@ namespace engine::scene
 
         // 先更新物理引擎
         context_.getPhysicsEngine().update(delta_time);
+        // 更新相机
+        context_.getCamera().update(delta_time);
 
         // 更新所有游戏对象，先略过需要移除的对象
         for (auto it = game_objects_.begin(); it != game_objects_.end();)
