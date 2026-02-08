@@ -80,11 +80,11 @@ namespace engine::component
         engine::utils::Alignment getAlignment() const { return alignment_; }       // 获取对齐方式
 
         // Setters
-        void setSpriteById(std::string &texture_id, const std::optional<SDL_FRect> &source_rect_opt = std::nullopt); // 设置精灵对象
-        void setFlipped(bool flipped) { sprite_.setFlipped(flipped); }                                               // 设置是否翻转
-        void setHidden(bool hidden) { is_hidden_ = hidden; }                                                         // 设置是否隐藏
-        void setSourceRect(std::optional<SDL_FRect> &source_rect_opt);                                               // 设置源矩形
-        void setAlignment(engine::utils::Alignment anchor);                                                          // 设置对齐方式
+        void setSpriteById(std::string &texture_id, std::optional<SDL_FRect> source_rect_opt = std::nullopt); // 设置精灵对象
+        void setFlipped(bool flipped) { sprite_.setFlipped(flipped); }                                        // 设置是否翻转
+        void setHidden(bool hidden) { is_hidden_ = hidden; }                                                  // 设置是否隐藏
+        void setSourceRect(std::optional<SDL_FRect> source_rect_opt);                                         // 设置源矩形
+        void setAlignment(engine::utils::Alignment anchor);                                                   // 设置对齐方式
 
     private:
         void updateSpriteSize(); // 辅助函数，根据 sprite_ 的 source_rect_ 更新 sprite_size_

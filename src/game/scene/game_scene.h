@@ -29,10 +29,13 @@ namespace game::scene
 
     private:
         // void createTestObject();
-        void testCamera();
+        // void testCamera();
         // void TestObject();
-        void TestPlayer();
-        void TestCollisionParis();
+        // void TestPlayer();
+        // void TestCollisionParis();
+        [[nodiscard]] bool initLevel();
+        [[nodiscard]] bool initPlayer();
+        [[nodiscard]] bool initEnemyAndItem();
     };
 
 } // namespace game::scene

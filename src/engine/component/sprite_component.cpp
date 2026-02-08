@@ -128,7 +128,7 @@ namespace engine::component
         context.getRenderer().drawSprite(context.getCamera(), sprite_, pos, scale, rotation_degrees);
     }
 
-    void SpriteComponent::setSpriteById(std::string &texture_id, const std::optional<SDL_FRect> &source_rect_opt)
+    void SpriteComponent::setSpriteById(std::string &texture_id, std::optional<SDL_FRect> source_rect_opt)
     {
         sprite_.setTextureId(texture_id);
         sprite_.setSourceRect(std::move(source_rect_opt));
@@ -137,7 +137,7 @@ namespace engine::component
         updateOffset();
     }
 
-    void SpriteComponent::setSourceRect(std::optional<SDL_FRect> &source_rect_opt)
+    void SpriteComponent::setSourceRect(std::optional<SDL_FRect> source_rect_opt)
     {
         sprite_.setSourceRect(std::move(source_rect_opt));
         updateSpriteSize();

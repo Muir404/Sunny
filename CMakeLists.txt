@@ -331,7 +331,8 @@ set(SOURCES
     # engine-render
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
-
+    src/engine/render/animation.cpp
+    
     # engine-input
     src/engine/input/input_manager.cpp
     src/engine/object/game_object.cpp
@@ -347,6 +348,7 @@ set(SOURCES
     src/engine/component/tilelayer_component.cpp
     src/engine/component/physics_component.cpp
     src/engine/component/collider_component.cpp
+    src/engine/component/animation_component.cpp
 
     # engine-scene
     src/engine/scene/scene.cpp
@@ -355,6 +357,19 @@ set(SOURCES
     
     # game-scene
     src/game/scene/game_scene.cpp
+
+    # game-component
+    src/game/component/player_component.cpp
+
+    # game-component-state
+    src/game/component/state/climb_state.cpp
+    src/game/component/state/dead_state.cpp
+    src/game/component/state/fall_state.cpp
+    src/game/component/state/hurt_state.cpp
+    src/game/component/state/idle_state.cpp
+    src/game/component/state/jump_state.cpp
+    src/game/component/state/player_state.cpp
+    src/game/component/state/walk_state.cpp
     )
 
 # --- 添加 ImGui 开始 ---

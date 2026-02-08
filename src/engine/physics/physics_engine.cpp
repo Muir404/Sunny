@@ -54,7 +54,7 @@ namespace engine::physics
                 continue;
             }
 
-            // pc->resetCollisionFlags(); // 重置碰撞标志
+            pc->resetCollisionFlags(); // 重置碰撞标志
 
             // 应用重力 (如果组件受重力影响)：F = g * m
             if (pc->isUseGravity())
@@ -200,7 +200,7 @@ namespace engine::physics
                     // 撞墙了！速度归零，x方向移动到贴着墙的位置
                     new_obj_pos.x = tile_x * layer->getTileSize().x - obj_size.x;
                     pc->velocity_.x = 0.0f;
-                    // pc->setCollidedRight(true);
+                    pc->setCollidedRight(true);
                 }
                 else
                 {
@@ -213,7 +213,7 @@ namespace engine::physics
                         if (new_obj_pos.y > (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_right)
                         {
                             new_obj_pos.y = (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_right;
-                            // pc->setCollidedBelow(true);
+                            pc->setCollidedBelow(true);
                         }
                     }
                 }
@@ -234,7 +234,7 @@ namespace engine::physics
                     // 撞墙了！速度归零，x方向移动到贴着墙的位置
                     new_obj_pos.x = (tile_x + 1) * layer->getTileSize().x;
                     pc->velocity_.x = 0.0f;
-                    // pc->setCollidedLeft(true);
+                    pc->setCollidedLeft(true);
                 }
                 else
                 {
@@ -246,7 +246,7 @@ namespace engine::physics
                         if (new_obj_pos.y > (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_left)
                         {
                             new_obj_pos.y = (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_left;
-                            // pc->setCollidedBelow(true);
+                            pc->setCollidedBelow(true);
                         }
                     }
                 }
@@ -269,7 +269,7 @@ namespace engine::physics
                     // 到达地面！速度归零，y方向移动到贴着地面的位置
                     new_obj_pos.y = tile_y * layer->getTileSize().y - obj_size.y;
                     pc->velocity_.y = 0.0f;
-                    // pc->setCollidedBelow(true);
+                    pc->setCollidedBelow(true);
                     // 如果两个角点都位于梯子上，则判断是不是处在梯子顶层
                 }
                 else if (tile_type_left == engine::component::TileType::LADDER && tile_type_right == engine::component::TileType::LADDER)
@@ -284,7 +284,7 @@ namespace engine::physics
                         {
                             // 非攀爬状态
                             // pc->setOnTopLadder(true);   // 设置在梯子顶层标志
-                            // pc->setCollidedBelow(true); // 设置下方碰撞标志
+                            pc->setCollidedBelow(true); // 设置下方碰撞标志
                             // 让物体贴着梯子顶层位置(与SOLID情况相同)
                             new_obj_pos.y = tile_y * layer->getTileSize().y - obj_size.y;
                             pc->velocity_.y = 0.0f;
@@ -308,7 +308,7 @@ namespace engine::physics
                         {
                             new_obj_pos.y = (tile_y + 1) * layer->getTileSize().y - obj_size.y - height;
                             pc->velocity_.y = 0.0f; // 只有向下运动时才需要让 y 速度归零
-                            // pc->setCollidedBelow(true);
+                            pc->setCollidedBelow(true);
                         }
                     }
                 }
@@ -329,7 +329,7 @@ namespace engine::physics
                     // 撞到天花板！速度归零，y方向移动到贴着天花板的位置
                     new_obj_pos.y = (tile_y + 1) * layer->getTileSize().y;
                     pc->velocity_.y = 0.0f;
-                    // pc->setCollidedAbove(true);
+                    pc->setCollidedAbove(true);
                 }
             }
         }
@@ -372,7 +372,7 @@ namespace engine::physics
                 if (move_pc->velocity_.x > 0.0f)
                 {
                     move_pc->velocity_.x = 0.0f;
-                    // move_pc->setCollidedRight(true);
+                    move_pc->setCollidedRight(true);
                 }
             }
             else
@@ -382,7 +382,7 @@ namespace engine::physics
                 if (move_pc->velocity_.x < 0.0f)
                 {
                     move_pc->velocity_.x = 0.0f;
-                    // move_pc->setCollidedLeft(true);
+                    move_pc->setCollidedLeft(true);
                 }
             }
         }
@@ -396,7 +396,7 @@ namespace engine::physics
                 if (move_pc->velocity_.y > 0.0f)
                 {
                     move_pc->velocity_.y = 0.0f;
-                    // move_pc->setCollidedBelow(true);
+                    move_pc->setCollidedBelow(true);
                 }
             }
             else
@@ -406,7 +406,7 @@ namespace engine::physics
                 if (move_pc->velocity_.y < 0.0f)
                 {
                     move_pc->velocity_.y = 0.0f;
-                    // move_pc->setCollidedAbove(true);
+                    move_pc->setCollidedAbove(true);
                 }
             }
         }
