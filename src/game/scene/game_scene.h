@@ -33,11 +33,26 @@ namespace game::scene
         // void TestObject();
         // void TestPlayer();
         // void TestCollisionParis();
+        // void testHealth();
+
         [[nodiscard]] bool initLevel();
         [[nodiscard]] bool initPlayer();
         [[nodiscard]] bool initEnemyAndItem();
 
-        void testHealth();
+        void handleOBjectCollisons();                                                                       ///< @brief 处理游戏对象间的碰撞逻辑（从PhysicsEngine获取信息）
+        void handleTileTriggers();                                                                          ///< @brief 处理瓦片触发事件（从PhysicsEngine获取信息）
+        void playerVSEnemyCollision(engine::object::GameObject *player, engine::object::GameObject *enemy); ///< @brief 玩家与敌人碰撞处理
+        void playerVSItemCollision(engine::object::GameObject *player, engine::object::GameObject *item);   ///< @brief 玩家与道具碰撞处理
+
+        /// @brief 根据关卡名称获取对应的地图文件路径
+        std::string levelNameToPath(std::string_view level_name) const { return "assets/maps/" + std::string(level_name) + ".tmj"; }
+
+        /**
+         * @brief 创建一个特效对象（一次性）。
+         * @param center_pos 特效中心位置
+         * @param tag 特效标签（决定特效类型,例如"enemy","item"）
+         */
+        void createEffect(glm::vec2 center_pos, std::string_view tag);
     };
 
 } // namespace game::scene

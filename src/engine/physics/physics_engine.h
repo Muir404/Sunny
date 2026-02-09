@@ -68,11 +68,11 @@ namespace engine::physics
         {
             return collision_pairs_;
         };
-        // /// @brief 获取本帧检测到的所有瓦片触发事件。(此列表在每次 update 开始时清空)
-        // const std::vector<std::pair<engine::object::GameObject *, engine::component::TileType>> &getTileTriggerEvents() const
-        // {
-        //     return tile_trigger_events_;
-        // };
+        /// @brief 获取本帧检测到的所有瓦片触发事件。(此列表在每次 update 开始时清空)
+        const std::vector<std::pair<engine::object::GameObject *, engine::component::TileType>> &getTileTriggerEvents() const
+        {
+            return tile_trigger_events_;
+        };
 
     private:
         ///< @brief 检测并处理对象之间的碰撞，并记录需要游戏逻辑处理的碰撞对。
@@ -94,10 +94,10 @@ namespace engine::physics
          */
         float getTileHeightAtWidth(float width, engine::component::TileType type, glm::vec2 tile_size);
 
-        //     /**
-        //      * @brief 检测所有游戏对象与瓦片层的触发器类型瓦片碰撞，并记录触发事件。(位移处理完毕后再调用)
-        //      */
-        //     void checkTileTriggers();
+        /**
+         * @brief 检测所有游戏对象与瓦片层的触发器类型瓦片碰撞，并记录触发事件。(位移处理完毕后再调用)
+         */
+        void checkTileTriggers();
     };
 
 } // namespace engine::physics
