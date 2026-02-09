@@ -12,6 +12,7 @@
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/collider_component.h"
 #include "../../engine/component/tilelayer_component.h"
+#include "../../engine/component/health_component.h"
 
 #include "../../engine/render/camera.h"
 
@@ -78,6 +79,7 @@ namespace game::scene
         // TestObject();
         // TestPlayer();
         // TestCollisionParis();
+        testHealth();
     }
 
     void GameScene::clean()
@@ -195,6 +197,15 @@ namespace game::scene
         }
         */
         return success;
+    }
+
+    void GameScene::testHealth()
+    {
+        auto input_manager = context_.getInputManager();
+        if (input_manager.isActionPressed("attack"))
+        {
+            player_->getComponent<game::component::PlayerComponent>()->takeDamage(1);
+        }
     }
 
     /*

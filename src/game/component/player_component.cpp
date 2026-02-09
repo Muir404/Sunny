@@ -6,7 +6,7 @@
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/animation_component.h"
-// #include "../../engine/component/health_component.h"
+#include "../../engine/component/health_component.h"
 // #include "../../engine/component/audio_component.h"
 #include "../../engine/object/game_object.h"
 #include "../../engine/input/input_manager.h"
@@ -31,12 +31,13 @@ namespace game::component
         physics_component_ = owner_->getComponent<engine::component::PhysicsComponent>();
         sprite_component_ = owner_->getComponent<engine::component::SpriteComponent>();
         animation_component_ = owner_->getComponent<engine::component::AnimationComponent>();
-        // health_component_ = owner_->getComponent<engine::component::HealthComponent>();
+        health_component_ = owner_->getComponent<engine::component::HealthComponent>();
         // audio_component_ = owner_->getComponent<engine::component::AudioComponent>();
 
         // 检查必要组件是否存在
         if (!transform_component_ || !physics_component_ || !sprite_component_ /*||
-            !animation_component_ || !health_component_ || !audio_component_*/)
+            !animation_component_ || !health_component_ || !audio_component_*/
+        )
         {
             spdlog::error("Player 对象缺少必要组件！");
         }
@@ -56,30 +57,32 @@ namespace game::component
 
     bool PlayerComponent::takeDamage(int damage)
     {
-        if (is_dead_ /*|| !health_component_ || damage <= 0*/)
+        if (is_dead_ || !health_component_ || damage <= 0)
         {
             spdlog::warn("玩家已死亡或缺少必要组件，并未造成伤害。");
             return false;
         }
 
-        // bool success = health_component_->takeDamage(damage);
-        // if (!success)
-        //     return false;
+        bool success = health_component_->takeDamage(damage);
+        if (!success)
+        {
+            return false;
+        }
         // --- 成功造成伤害了，根据是否存活决定状态切换
-        // if (health_component_->isAlive())
-        // {
-        //     spdlog::debug("玩家受到了 {} 点伤害，当前生命值: {}/{}。",
-        //                   damage, health_component_->getCurrentHealth(), health_component_->getMaxHealth());
-        //     // 切换到受伤状态
-        //     setState(std::make_unique<state::HurtState>(this));
-        // }
-        // else
-        // {
-        //     spdlog::debug("玩家死亡。");
-        //     is_dead_ = true;
-        //     // 切换到死亡状态
-        //     setState(std::make_unique<state::DeadState>(this));
-        // }
+        if (health_component_->isAlive())
+        {
+            spdlog::debug("玩家受到了 {} 点伤害，当前生命值: {}/{}。",
+                          damage, health_component_->getCurrentHealth(), health_component_->getMaxHealth());
+            // 切换到受伤状态
+            setState(std::make_unique<state::HurtState>(this));
+        }
+        else
+        {
+            spdlog::debug("玩家死亡。");
+            is_dead_ = true;
+            // 切换到死亡状态
+            setState(std::make_unique<state::DeadState>(this));
+        }
         return true;
     }
 

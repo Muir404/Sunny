@@ -7,6 +7,7 @@
 #include "../component/collider_component.h"
 #include "../component/physics_component.h"
 #include "../component/animation_component.h"
+#include "../component/health_component.h"
 
 #include "../scene/scene.h"
 
@@ -324,6 +325,14 @@ namespace engine::scene
                     addAnimation(anim_json, ac, src_size);
                 }
 
+                // 获取生命值组件
+                auto health = getTileProperty<int>(tile_json, "health");
+                if (health)
+                {
+                    // 添加 HealthComponent
+                    game_object->addComponent<engine::component::HealthComponent>(health.value());
+                }
+
                 // 添加到场景中
                 scene.addGameObject(std::move(game_object));
                 spdlog::info("加载对象:'{}'完成", object_name);
@@ -342,7 +351,7 @@ namespace engine::scene
         // 遍历动画 JSON 对象中的每个键值对（动画名称 : 动画信息）
         for (const auto &anim : anim_json.items())
         {
-            const std::string& anim_name = anim.key();
+            const std::string &anim_name = anim.key();
             const auto &anim_info = anim.value();
             if (!anim_info.is_object())
             {

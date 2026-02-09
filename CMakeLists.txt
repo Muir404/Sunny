@@ -349,6 +349,7 @@ set(SOURCES
     src/engine/component/physics_component.cpp
     src/engine/component/collider_component.cpp
     src/engine/component/animation_component.cpp
+    src/engine/component/health_component.cpp
 
     # engine-scene
     src/engine/scene/scene.cpp

@@ -13,7 +13,7 @@ namespace engine::component
     class PhysicsComponent;
     class SpriteComponent;
     class AnimationComponent;
-    // class HealthComponent;
+    class HealthComponent;
     // class AudioComponent;
 }
 
@@ -38,7 +38,7 @@ namespace game::component
         engine::component::SpriteComponent *sprite_component_ = nullptr;
         engine::component::PhysicsComponent *physics_component_ = nullptr;
         engine::component::AnimationComponent *animation_component_ = nullptr;
-        // engine::component::HealthComponent *health_component_ = nullptr;
+        engine::component::HealthComponent *health_component_ = nullptr;
         // engine::component::AudioComponent *audio_component_ = nullptr;
 
         std::unique_ptr<state::PlayerState> current_state_;
@@ -79,7 +79,7 @@ namespace game::component
         engine::component::SpriteComponent *getSpriteComponent() const { return sprite_component_; }
         engine::component::PhysicsComponent *getPhysicsComponent() const { return physics_component_; }
         engine::component::AnimationComponent *getAnimationComponent() const { return animation_component_; }
-        // engine::component::HealthComponent *getHealthComponent() const { return health_component_; }
+        engine::component::HealthComponent *getHealthComponent() const { return health_component_; }
         // engine::component::AudioComponent *getAudioComponent() const { return audio_component_; }
 
         void setIsDead(bool is_dead) { is_dead_ = is_dead; }                                  ///< @brief 设置玩家是否死亡
