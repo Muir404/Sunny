@@ -283,7 +283,7 @@ namespace engine::physics
                         if (pc->isUseGravity())
                         {
                             // 非攀爬状态
-                            // pc->setOnTopLadder(true);   // 设置在梯子顶层标志
+                            pc->setOnTopLadder(true);   // 设置在梯子顶层标志
                             pc->setCollidedBelow(true); // 设置下方碰撞标志
                             // 让物体贴着梯子顶层位置(与SOLID情况相同)
                             new_obj_pos.y = tile_y * layer->getTileSize().y - obj_size.y;

@@ -34,12 +34,12 @@ namespace game::component::state
         }
 
         // 如果按下“move_down”且在梯子顶层，则切换到 ClimbState
-        // if (physics_component->isOnTopLadder() && input_manager.isActionDown("move_down"))
-        // {
-        //     // 需要向下移动一点，确保下一帧能与梯子碰撞（否则会切换回FallState）
-        //     player_component_->getTransformComponent()->translate(glm::vec2(0, 2.0f));
-        //     return std::make_unique<ClimbState>(player_component_);
-        // }
+        if (physics_component->isOnTopLadder() && input_manager.isActionDown("move_down"))
+        {
+            // 需要向下移动一点，确保下一帧能与梯子碰撞（否则会切换回FallState）
+            player_component_->getTransformComponent()->translate(glm::vec2(0, 2.0f));
+            return std::make_unique<ClimbState>(player_component_);
+        }
 
         // 如果按下了左右移动键，则切换到 WalkState
         if (input_manager.isActionDown("move_left") || input_manager.isActionDown("move_right"))
