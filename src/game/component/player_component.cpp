@@ -35,9 +35,8 @@ namespace game::component
         // audio_component_ = owner_->getComponent<engine::component::AudioComponent>();
 
         // 检查必要组件是否存在
-        if (!transform_component_ || !physics_component_ || !sprite_component_ /*||
-            !animation_component_ || !health_component_ || !audio_component_*/
-        )
+        if (!transform_component_ || !physics_component_ || !sprite_component_ ||
+            !animation_component_ || !health_component_ /*|| !audio_component_*/)
         {
             spdlog::error("Player 对象缺少必要组件！");
         }
@@ -135,29 +134,29 @@ namespace game::component
             coyote_timer_ = 0.0f;
         }
 
-        // // 如果处于无敌状态，则进行闪烁
-        // if (health_component_->isInvincible())
-        // {
-        //     flash_timer_ += delta_time; // 闪烁计时器增加
-        //     if (flash_timer_ >= 2 * flash_interval_)
-        //     {
-        //         flash_timer_ -= 2 * flash_interval_; // 闪烁计时器在 0～2倍闪烁间隔 中循环
-        //     }
-        //     // 一半时间可见，一半时间不可见。
-        //     if (flash_timer_ < flash_interval_)
-        //     {
-        //         sprite_component_->setHidden(true);
-        //     }
-        //     else
-        //     {
-        //         sprite_component_->setHidden(false);
-        //     }
-        // }
-        // // 非无敌状态时确保精灵可见
-        // else if (sprite_component_->isHidden())
-        // {
-        //     sprite_component_->setHidden(false);
-        // }
+        // 如果处于无敌状态，则进行闪烁
+        if (health_component_->isInvincible())
+        {
+            flash_timer_ += delta_time; // 闪烁计时器增加
+            if (flash_timer_ >= 2 * flash_interval_)
+            {
+                flash_timer_ -= 2 * flash_interval_; // 闪烁计时器在 0～2倍闪烁间隔 中循环
+            }
+            // 一半时间可见，一半时间不可见。
+            if (flash_timer_ < flash_interval_)
+            {
+                sprite_component_->setHidden(true);
+            }
+            else
+            {
+                sprite_component_->setHidden(false);
+            }
+        }
+        // 非无敌状态时确保精灵可见
+        else if (sprite_component_->isHidden())
+        {
+            sprite_component_->setHidden(false);
+        }
 
         auto next_state = current_state_->update(delta_time, context);
         if (next_state)

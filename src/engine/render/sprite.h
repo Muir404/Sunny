@@ -24,9 +24,9 @@ namespace engine::render
         }
 
         // getters and setters
-        const std::string &getTextureId() const { return texture_id_; }               // 获取纹理ID
-        const std::optional<SDL_FRect> getSourceRect() const { return source_rect_; } // 获取源矩形
-        bool isFlipped() const { return is_flipped_; }                                // 获取是否水平翻转
+        const std::string &getTextureId() const { return texture_id_; }                // 获取纹理ID
+        const std::optional<SDL_FRect> &getSourceRect() const { return source_rect_; } // 获取源矩形
+        bool isFlipped() const { return is_flipped_; }                                 // 获取是否水平翻转
 
         void setTextureId(const std::string &texture_id) { texture_id_ = texture_id; }                 // 设置纹理ID
         void setSourceRect(const std::optional<SDL_FRect> source_rect) { source_rect_ = source_rect; } // 设置源矩形

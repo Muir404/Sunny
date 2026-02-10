@@ -89,14 +89,14 @@ namespace engine::scene
                 (*it)->handleInput(context_);
                 ++it;
             }
-            // else
-            // {
-            //     if (*it)
-            //     {
-            //         (*it)->clean(); // 如果对象需要移除，则先调用clean方法}
-            //     }
-            //     it = game_objects_.erase(it);
-            // }
+            else
+            {
+                if (*it)
+                {
+                    (*it)->clean(); // 如果对象需要移除，则先调用clean方法}
+                }
+                it = game_objects_.erase(it);
+            }
         }
     }
 

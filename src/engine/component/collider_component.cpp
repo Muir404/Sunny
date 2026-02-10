@@ -107,6 +107,7 @@ namespace engine::component
     {
         if (!transform_ || !collider_)
         {
+            spdlog::error("ColliderComponent::getWorldAABB: transform is null!");
             return {glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f)};
         }
         // 计算最小包围盒的左上角坐标（position）

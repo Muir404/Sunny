@@ -24,6 +24,12 @@
 #include "../../engine/utils/math.h"
 
 #include "../component/player_component.h"
+#include "../component/ai_component.h"
+
+#include "../component/ai/ai_behavior.h"
+#include "../component/ai/jump_behavior.h"
+#include "../component/ai/patrol_behavior.h"
+#include "../component/ai/updown_behavior.h"
 
 #include "game_scene.h"
 
@@ -37,6 +43,7 @@ namespace game::scene
     {
         spdlog::trace("HelpsScene 创建.");
     }
+
     void GameScene::init()
     {
         if (!initLevel())
@@ -67,6 +74,8 @@ namespace game::scene
     void GameScene::update(float delta_time)
     {
         Scene::update(delta_time);
+        handleObjectCollisons();
+        handleTileTriggers();
     }
 
     void GameScene::render()
@@ -77,8 +86,7 @@ namespace game::scene
     void GameScene::handleInput()
     {
         Scene::handleInput();
-        handleOBjectCollisons();
-        handleTileTriggers();
+
         // testCamera();
         // TestObject();
         // TestPlayer();
@@ -156,7 +164,6 @@ namespace game::scene
     bool GameScene::initEnemyAndItem()
     {
         bool success = true;
-        /*
         for (auto &game_object : game_objects_)
         {
             if (game_object->getName() == "eagle")
@@ -199,11 +206,10 @@ namespace game::scene
                 }
             }
         }
-        */
         return success;
     }
 
-    void GameScene::handleOBjectCollisons()
+    void GameScene::handleObjectCollisons()
     {
         // 从物理引擎中获取碰撞对
         auto collision_pairs = context_.getPhysicsEngine().getCollisionPairs();
@@ -212,70 +218,35 @@ namespace game::scene
             auto *obj1 = pair.first;
             auto *obj2 = pair.second;
 
-            // 先确定哪个是玩家，哪个是其他对象
-            engine::object::GameObject *player = nullptr;
-            engine::object::GameObject *other = nullptr;
-
-            if (obj1->getName() == "player")
+            // 处理玩家与敌人的碰撞
+            if (obj1->getName() == "player" && obj2->getTag() == "enemy")
             {
-                player = obj1;
-                other = obj2;
+                playerVSEnemyCollision(obj1, obj2);
             }
-            else if (obj2->getName() == "player")
+            else if (obj2->getName() == "player" && obj1->getTag() == "enemy")
             {
-                player = obj2;
-                other = obj1;
+                playerVSEnemyCollision(obj2, obj1);
             }
-
-            // 如果碰撞对里没有玩家，直接跳过
-            if (!player)
+            // 处理玩家与道具的碰撞
+            else if (obj1->getName() == "player" && obj2->getTag() == "item")
             {
-                continue;
+                playerVSItemCollision(obj1, obj2);
             }
-
-            // 统一处理玩家和其他对象的碰撞
-            if (other->getTag() == "enemy")
+            else if (obj2->getName() == "player" && obj1->getTag() == "item")
             {
-                playerVSEnemyCollision(player, other);
+                playerVSItemCollision(obj2, obj1);
             }
-            else if (other->getTag() == "item")
+            // 处理玩家与"hazard"对象碰撞
+            else if (obj1->getName() == "player" && obj2->getTag() == "hazard")
             {
-                playerVSItemCollision(player, other);
+                // handlePlayerDamage(1);
+                spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj1->getName());
             }
-            else if (other->getTag() == "hazard")
+            else if (obj2->getName() == "player" && obj1->getTag() == "hazard")
             {
-                spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", player->getName());
+                // handlePlayerDamage(1);
+                spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj2->getName());
             }
-
-            // // 处理玩家与敌人的碰撞
-            // if (obj1->getName() == "player" && obj2->getTag() == "enemy")
-            // {
-            //     playerVSEnemyCollision(obj1, obj2);
-            // }
-            // else if (obj2->getName() == "player" && obj1->getTag() == "enemy")
-            // {
-            //     playerVSEnemyCollision(obj2, obj1);
-            // }
-            // // 处理玩家与道具的碰撞
-            // else if (obj1->getName() == "player" && obj2->getTag() == "item")
-            // {
-            //     playerVSItemCollision(obj1, obj2);
-            // }
-            // else if (obj2->getName() == "player" && obj1->getTag() == "item")
-            // {
-            //     playerVSItemCollision(obj2, obj1);
-            // }
-            // // 处理玩家与"hazard"对象碰撞
-            // else if (obj1->getName() == "player" && obj2->getTag() == "hazard")
-            // {
-            //     // handlePlayerDamage(1);
-            //     spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj1->getName());
-            // }
-            // else if (obj2->getName() == "player" && obj1->getTag() == "hazard")
-            // {
-            //     // handlePlayerDamage(1);
-            //     spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj2->getName());
-            // }
 
             // // 处理玩家与关底触发器碰撞
             // else if (obj1->getName() == "player" && obj2->getTag() == "next_level")
@@ -320,7 +291,9 @@ namespace game::scene
 
     void GameScene::playerVSEnemyCollision(engine::object::GameObject *player, engine::object::GameObject *enemy)
     {
-        // --- 踩踏判断逻辑：1. 玩家中心点在敌人上方    2. 重叠区域：overlap.x > overlap.y
+        // --- 踩踏判断逻辑：
+        // 1. 玩家中心点在敌人上方
+        // 2. 重叠区域：overlap.x > overlap.y
         auto player_aabb = player->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
         auto enemy_aabb = enemy->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
         auto player_center = player_aabb.position + player_aabb.size / 2.0f;
@@ -355,6 +328,7 @@ namespace game::scene
         else
         {
             spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->getName(), player->getName());
+            player->getComponent<game::component::PlayerComponent>()->takeDamage(1);
             // handlePlayerDamage(1);
         }
     }
@@ -371,7 +345,7 @@ namespace game::scene
         }
         item->setNeedRemove(true); // 标记道具为待删除状态
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
-        // createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag()); // 创建特效
+        createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag()); // 创建特效
         // context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");           // 播放音效
     }
 

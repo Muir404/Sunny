@@ -361,7 +361,7 @@ set(SOURCES
 
     # game-component
     src/game/component/player_component.cpp
-
+    src/game/component/ai_component.cpp
     # game-component-state
     src/game/component/state/climb_state.cpp
     src/game/component/state/dead_state.cpp
@@ -371,6 +371,11 @@ set(SOURCES
     src/game/component/state/jump_state.cpp
     src/game/component/state/player_state.cpp
     src/game/component/state/walk_state.cpp
+
+    # game-component-ai
+    src/game/component/ai/jump_behavior.cpp
+    src/game/component/ai/patrol_behavior.cpp
+    src/game/component/ai/updown_behavior.cpp
     )
 
 # --- 添加 ImGui 开始 ---
