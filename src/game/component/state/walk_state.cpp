@@ -30,10 +30,10 @@ namespace game::component::state
         auto sprite_component = player_component_->getSpriteComponent();
 
         // 如果按"move_up"键，且与梯子重合，则切换到 ClimbState
-        // if (physics_component->hasCollidedLadder() && input_manager.isActionDown("move_up"))
-        // {
-        //     return std::make_unique<ClimbState>(player_component_);
-        // }
+        if (physics_component->hasCollidedLadder() && input_manager.isActionDown("move_up"))
+        {
+            return std::make_unique<ClimbState>(player_component_);
+        }
 
         // 如果按下“jump”则切换到 JumpState
         if (input_manager.isActionPressed("jump"))

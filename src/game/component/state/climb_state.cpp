@@ -8,7 +8,7 @@
 #include "../../../engine/input/input_manager.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
-// #include "../../../engine/component/animation_component.h"
+#include "../../../engine/component/animation_component.h"
 #include <glm/common.hpp>
 #include <spdlog/spdlog.h>
 
@@ -40,7 +40,7 @@ namespace game::component::state
 
         auto input_manager = context.getInputManager();
         auto physics_component = player_component_->getPhysicsComponent();
-        // auto animation_component = player_component_->getAnimationComponent();
+        auto animation_component = player_component_->getAnimationComponent();
 
         // --- 攀爬状态下，按键则移动，不按键则静止 ---
         auto is_up = input_manager.isActionDown("move_up");
@@ -49,16 +49,16 @@ namespace game::component::state
         auto is_right = input_manager.isActionDown("move_right");
         auto speed = player_component_->getClimbSpeed();
 
-        physics_component->velocity_.y = is_up ? -speed : // 三目运算符嵌套，自左向右执行
-                                             is_down ? speed
-                                                     : 0.0f;
+        // 三目运算符嵌套，自左向右执行
+        physics_component->velocity_.y = is_up ? -speed : is_down ? speed
+                                                                  : 0.0f;
         physics_component->velocity_.x = is_left ? -speed : is_right ? speed
                                                                      : 0.0f;
 
-        // // --- 根据是否有按键决定动画播放情况 ---
-        // (is_up || is_down || is_left || is_right)
-        //     ? animation_component->resumeAnimation() // 有按键则恢复动画播放
-        //     : animation_component->stopAnimation();  // 无按键则停止动画播放
+        // --- 根据是否有按键决定动画播放情况 ---
+        (is_up || is_down || is_left || is_right)
+            ? animation_component->resumeAnimation() // 有按键则恢复动画播放
+            : animation_component->stopAnimation();  // 无按键则停止动画播放
 
         // 按跳跃键主动离开攀爬状态
         if (input_manager.isActionPressed("jump"))
@@ -77,10 +77,10 @@ namespace game::component::state
             return std::make_unique<IdleState>(player_component_);
         }
         // 如果离开梯子区域，则切换到 FallState（能走到这里 说明非着地状态）
-        // if (!physics_component->hasCollidedLadder())
-        // {
-        //     return std::make_unique<FallState>(player_component_);
-        // }
+        if (!physics_component->hasCollidedLadder())
+        {
+            return std::make_unique<FallState>(player_component_);
+        }
         return nullptr;
     }
 

@@ -28,10 +28,10 @@ namespace game::component::state
         auto physics_component = player_component_->getPhysicsComponent();
 
         // 如果按"move_up"键，且与梯子重合，则切换到 ClimbState
-        // if (physics_component->hasCollidedLadder() && input_manager.isActionDown("move_up"))
-        // {
-        //     return std::make_unique<ClimbState>(player_component_);
-        // }
+        if (physics_component->hasCollidedLadder() && input_manager.isActionDown("move_up"))
+        {
+            return std::make_unique<ClimbState>(player_component_);
+        }
 
         // 如果按下“move_down”且在梯子顶层，则切换到 ClimbState
         // if (physics_component->isOnTopLadder() && input_manager.isActionDown("move_down"))
