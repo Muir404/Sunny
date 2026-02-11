@@ -4,7 +4,7 @@
 #include "../../../engine/component/animation_component.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/collider_component.h"
-// #include "../../../engine/component/audio_component.h"
+#include "../../../engine/component/audio_component.h"
 
 namespace game::component::state
 {
@@ -25,10 +25,10 @@ namespace game::component::state
             collider_component->setActive(false);
         }
 
-        // if (auto *audio_component = player_component_->getAudioComponent(); audio_component)
-        // {
-        //     audio_component->playSound("dead"); // 播放死亡音效
-        // }
+        if (auto *audio_component = player_component_->getAudioComponent(); audio_component)
+        {
+            audio_component->playSound("dead"); // 播放死亡音效
+        }
     }
 
     void DeadState::exit()

@@ -21,6 +21,11 @@ namespace engine::physics
     class PhysicsEngine;
 }
 
+namespace engine::audio
+{
+    class AudioPlayer;
+}
+
 namespace engine::core
 {
     class GameState;
@@ -39,6 +44,7 @@ namespace engine::core
         engine::render::Camera &camera_;                      // 相机
         engine::resource::ResourceManager &resource_manager_; // 资源管理器
         engine::physics::PhysicsEngine &physics_engine_;      // 物理引擎
+        engine::audio::AudioPlayer &audio_player_;            // 音频播放器
 
     public:
         /**
@@ -53,7 +59,8 @@ namespace engine::core
                 engine::render::Renderer &renderer,
                 engine::render::Camera &camera,
                 engine::resource::ResourceManager &resource_manager,
-                engine::physics::PhysicsEngine &physics_engine_);
+                engine::physics::PhysicsEngine &physics_engine_,
+                engine::audio::AudioPlayer &audio_player_);
 
         // 禁止拷贝和移动，Context 对象通常是唯一的或按需创建/传递
         Context(const Context &) = delete;
@@ -81,6 +88,10 @@ namespace engine::core
         engine::physics::PhysicsEngine &getPhysicsEngine() const
         {
             return physics_engine_; // 获取物理引擎
+        }
+        engine::audio::AudioPlayer &getAudioPlayer() const
+        {
+            return audio_player_; // 获取播放器
         }
     };
 

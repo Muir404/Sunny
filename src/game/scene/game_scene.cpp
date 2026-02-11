@@ -14,6 +14,9 @@
 #include "../../engine/component/tilelayer_component.h"
 #include "../../engine/component/health_component.h"
 #include "../../engine/component/animation_component.h"
+#include "../../engine/component/audio_component.h"
+
+#include "../../engine/audio/audio_player.h"
 
 #include "../../engine/render/camera.h"
 #include "../../engine/render/animation.h"
@@ -66,6 +69,11 @@ namespace game::scene
             context_.getInputManager().setShouldQuit(true);
             return;
         }
+
+        context_.getAudioPlayer().setMusicVolume(0.2f);
+        context_.getAudioPlayer().setSoundVolume(0.5f);
+
+        context_.getAudioPlayer().playMusic("assets/audio/hurry_up_and_run.ogg", true, 1000);
 
         Scene::init();
         spdlog::trace("GameScene初始化完成");
@@ -319,8 +327,8 @@ namespace game::scene
             }
             // 玩家跳起效果
             player->getComponent<engine::component::PhysicsComponent>()->velocity_.y = -300.0f; // 向上跳起
-            //     // 播放音效 (此音效完全可以放在玩家的音频组件中，这里示例另一种用法：直接用AudioPlayer播放，传入文件路径)
-            //     context_.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
+            // 播放音效 (此音效完全可以放在玩家的音频组件中，这里示例另一种用法：直接用AudioPlayer播放，传入文件路径)
+            context_.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
             //     // 加分
             //     addScoreWithUI(10);
         }
@@ -333,7 +341,7 @@ namespace game::scene
         }
     }
 
-    void GameScene::playerVSItemCollision(engine::object::GameObject *player, engine::object::GameObject *item)
+    void GameScene::playerVSItemCollision(engine::object::GameObject *, engine::object::GameObject *item)
     {
         if (item->getName() == "fruit")
         {
@@ -346,10 +354,10 @@ namespace game::scene
         item->setNeedRemove(true); // 标记道具为待删除状态
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
         createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag()); // 创建特效
-        // context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");           // 播放音效
+        context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");           // 播放音效
     }
 
-    void GameScene::createEffect(glm::vec2 center_pos, std::string_view tag)
+    void GameScene::createEffect(glm::vec2 center_pos, const std::string &tag)
     {
         // --- 创建游戏对象和变换组件 ---
         auto effect_obj = std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));

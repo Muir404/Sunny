@@ -6,7 +6,7 @@
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/animation_component.h"
 #include "../../engine/component/health_component.h"
-// #include "../../engine/component/audio_component.h"
+#include "../../engine/component/audio_component.h"
 #include <spdlog/spdlog.h>
 
 namespace game::component
@@ -25,7 +25,7 @@ namespace game::component
         physics_component_ = owner_->getComponent<engine::component::PhysicsComponent>();
         sprite_component_ = owner_->getComponent<engine::component::SpriteComponent>();
         animation_component_ = owner_->getComponent<engine::component::AnimationComponent>();
-        // audio_component_ = owner_->getComponent<engine::component::AudioComponent>();
+        audio_component_ = owner_->getComponent<engine::component::AudioComponent>();
 
         // 检查是否所有必需的组件都存在(音频组件并非必须存在)
         if (!transform_component_ || !physics_component_ || !sprite_component_ || !animation_component_)

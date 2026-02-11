@@ -45,14 +45,14 @@ namespace game::scene
         void playerVSItemCollision(engine::object::GameObject *player, engine::object::GameObject *item);   ///< @brief 玩家与道具碰撞处理
 
         /// @brief 根据关卡名称获取对应的地图文件路径
-        std::string levelNameToPath(std::string_view level_name) const { return "assets/maps/" + std::string(level_name) + ".tmj"; }
+        // std::string levelNameToPath(const std::string & level_name) const { return "assets/maps/" + std::string(level_name) + ".tmj"; }
 
         /**
          * @brief 创建一个特效对象（一次性）。
          * @param center_pos 特效中心位置
          * @param tag 特效标签（决定特效类型,例如"enemy","item"）
          */
-        void createEffect(glm::vec2 center_pos, std::string_view tag);
+        void createEffect(glm::vec2 center_pos, const std::string &tag);
     };
 
 } // namespace game::scene

@@ -3,7 +3,10 @@
 #include "context.h"
 #include "config.h"
 
+#include "../audio/audio_player.h"
+
 #include "../resource/resource_manager.h"
+#include "../resource/audio_manager.h"
 
 #include "../physics/physics_engine.h"
 
@@ -85,6 +88,11 @@ namespace engine::core // 命名空间与路径一致
         }
 
         if (!initResourceManager())
+        {
+            return false;
+        }
+
+        if (!initAudioPlayer())
         {
             return false;
         }
@@ -280,6 +288,21 @@ namespace engine::core // 命名空间与路径一致
         return true;
     }
 
+    bool GameApp::initAudioPlayer()
+    {
+        try
+        {
+            audio_player_ = std::make_unique<engine::audio::AudioPlayer>(resource_manager_.get());
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化音频播放器失败：{}", e.what());
+            return false;
+        }
+        spdlog::trace("音频播放器初始化成功");
+        return true;
+    }
+
     bool GameApp::initRenderer()
     {
         try
@@ -343,7 +366,12 @@ namespace engine::core // 命名空间与路径一致
     {
         try
         {
-            context_ = std::make_unique<engine::core::Context>(*input_manager_, *renderer_, *camera_, *resource_manager_, *physics_engine_);
+            context_ = std::make_unique<engine::core::Context>(*input_manager_,
+                                                               *renderer_,
+                                                               *camera_,
+                                                               *resource_manager_,
+                                                               *physics_engine_,
+                                                               *audio_player_);
         }
         catch (const std::exception &e)
         {

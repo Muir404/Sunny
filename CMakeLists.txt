@@ -255,8 +255,8 @@ find_or_fetch_dependency(
     SDL3_mixer
     SDL3_mixer
     "https://github.com/libsdl-org/SDL_mixer.git"
-    "bf351431f8b4788fe819977e99e7067c182b2d7d"
-    "external/SDL_mixer-bf351431"
+    "prerelease-3.1.2"
+    "external/SDL_mixer-prerelease-3.1.2"
     AUTO  # 使用全局BUILD_SHARED_LIBS设置
 )
 
@@ -340,6 +340,9 @@ set(SOURCES
     # engine-physics
     src/engine/physics/physics_engine.cpp
     src/engine/physics/collision.cpp
+    
+    # engine-audio
+    src/engine/audio/audio_player.cpp
 
     # engine-component
     src/engine/component/sprite_component.cpp
@@ -350,6 +353,7 @@ set(SOURCES
     src/engine/component/collider_component.cpp
     src/engine/component/animation_component.cpp
     src/engine/component/health_component.cpp
+    src/engine/component/audio_component.cpp
 
     # engine-scene
     src/engine/scene/scene.cpp

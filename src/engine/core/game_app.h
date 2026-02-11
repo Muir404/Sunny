@@ -31,6 +31,11 @@ namespace engine::physics
     class PhysicsEngine;
 }
 
+namespace engine::audio
+{
+    class AudioPlayer;
+}
+
 namespace engine::core // 命名空间与路径一致
 {
     class Time;
@@ -54,6 +59,7 @@ namespace engine::core // 命名空间与路径一致
         std::unique_ptr<engine::core::Context> context_;
         std::unique_ptr<engine::scene::SceneManager> scene_manager_;
         std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;
+        std::unique_ptr<engine::audio::AudioPlayer> audio_player_;
 
     public:
         GameApp();
@@ -78,6 +84,7 @@ namespace engine::core // 命名空间与路径一致
         [[nodiscard]] bool initSDL();
         [[nodiscard]] bool initTime();
         [[nodiscard]] bool initResourceManager();
+        [[nodiscard]] bool initAudioPlayer();
         [[nodiscard]] bool initRenderer();
         [[nodiscard]] bool initCamera();
         [[nodiscard]] bool initInputManager();

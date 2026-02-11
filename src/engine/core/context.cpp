@@ -3,6 +3,8 @@
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include "../resource/resource_manager.h"
+#include "../physics/physics_engine.h"
+#include "../audio/audio_player.h"
 #include <spdlog/spdlog.h>
 
 namespace engine::core
@@ -12,12 +14,14 @@ namespace engine::core
                      engine::render::Renderer &renderer,
                      engine::render::Camera &camera,
                      engine::resource::ResourceManager &resource_manager,
-                     engine::physics::PhysicsEngine &physics_engine)
+                     engine::physics::PhysicsEngine &physics_engine,
+                     engine::audio::AudioPlayer &audio_player)
         : input_manager_(input_manager),
           renderer_(renderer),
           camera_(camera),
           resource_manager_(resource_manager),
-          physics_engine_(physics_engine)
+          physics_engine_(physics_engine),
+          audio_player_(audio_player)
     {
         spdlog::trace("上下文已创建并初始化。");
     }

@@ -1,35 +1,41 @@
 #include "resource_manager.h"
-#include "audio_manager.h"
 #include "texture_manager.h"
+#include "audio_manager.h"
 #include "font_manager.h"
-#include "SDL3_mixer/SDL_mixer.h"
-#include "SDL3_ttf/SDL_ttf.h"
-#include "spdlog/spdlog.h"
+#include <SDL3_mixer/SDL_mixer.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
 
 namespace engine::resource
 {
+
+    ResourceManager::~ResourceManager() = default;
+
     ResourceManager::ResourceManager(SDL_Renderer *renderer)
     {
+        // --- 初始化各个子系统 --- (如果出现错误会抛出异常，由上层捕获)
         texture_manager_ = std::make_unique<TextureManager>(renderer);
         audio_manager_ = std::make_unique<AudioManager>();
         font_manager_ = std::make_unique<FontManager>();
 
-        spdlog::trace("资源管理类构造成功");
+        spdlog::trace("ResourceManager 构造成功。");
+        // RAII: 构造成功即代表资源管理器可以正常工作，无需再初始化，无需检查指针是否为空
     }
 
     void ResourceManager::clear()
     {
         font_manager_->clearFonts();
-        audio_manager_->clearAudio();
+        audio_manager_->clearSounds();
+        audio_manager_->clearMusic();
         texture_manager_->clearTextures();
-        spdlog::trace("已通过资源管理器中的clear()清理资源");
+        spdlog::trace("ResourceManager 中的资源通过 clear() 清空。");
     }
 
-    ResourceManager::~ResourceManager() = default;
-
-    // 纹理接口
+    // --- 纹理接口实现 ---
     SDL_Texture *ResourceManager::loadTexture(const std::string &file_path)
     {
+        // 构造函数已经确保了 texture_manager_ 不为空，因此不需要再进行if检查，以免性能浪费
         return texture_manager_->loadTexture(file_path);
     }
 
@@ -37,70 +43,105 @@ namespace engine::resource
     {
         return texture_manager_->getTexture(file_path);
     }
-    void ResourceManager::unloadTexture(const std::string &file_path)
-    {
-        texture_manager_->unloadTexture(file_path);
-    }
+
     glm::vec2 ResourceManager::getTextureSize(const std::string &file_path)
     {
         return texture_manager_->getTextureSize(file_path);
     }
+
+    void ResourceManager::unloadTexture(const std::string &file_path)
+    {
+        texture_manager_->unloadTexture(file_path);
+    }
+
     void ResourceManager::clearTextures()
     {
         texture_manager_->clearTextures();
     }
 
-    // 音效接口
+    // --- 音频接口实现 ---
     MIX_Audio *ResourceManager::loadSound(const std::string &file_path)
     {
         return audio_manager_->loadSound(file_path);
     }
+
     MIX_Audio *ResourceManager::getSound(const std::string &file_path)
     {
         return audio_manager_->getSound(file_path);
     }
+
     void ResourceManager::unloadSound(const std::string &file_path)
     {
         audio_manager_->unloadSound(file_path);
     }
+
     void ResourceManager::clearSounds()
     {
         audio_manager_->clearSounds();
     }
 
-    // 音乐接口
     MIX_Audio *ResourceManager::loadMusic(const std::string &file_path)
     {
         return audio_manager_->loadMusic(file_path);
     }
+
     MIX_Audio *ResourceManager::getMusic(const std::string &file_path)
     {
         return audio_manager_->getMusic(file_path);
     }
+
     void ResourceManager::unloadMusic(const std::string &file_path)
     {
         audio_manager_->unloadMusic(file_path);
     }
+
     void ResourceManager::clearMusic()
     {
         audio_manager_->clearMusic();
     }
 
-    // 字体接口
+    // --- 字体接口实现 ---
     TTF_Font *ResourceManager::loadFont(const std::string &file_path, int point_size)
     {
         return font_manager_->loadFont(file_path, point_size);
     }
+
     TTF_Font *ResourceManager::getFont(const std::string &file_path, int point_size)
     {
         return font_manager_->getFont(file_path, point_size);
     }
+
     void ResourceManager::unloadFont(const std::string &file_path, int point_size)
     {
         font_manager_->unloadFont(file_path, point_size);
     }
+
     void ResourceManager::clearFonts()
     {
         font_manager_->clearFonts();
     }
-};
+
+
+
+    // 
+    MIX_Track *ResourceManager::getMusicTrack()
+    {
+        return audio_manager_->getNamedTrack("music_main");
+    }
+
+    MIX_Track *ResourceManager::getSoundTrack()
+    {
+        return audio_manager_->getTemporaryTrack();
+    }
+
+    void ResourceManager::releaseSoundTrack(MIX_Track *track)
+    {
+        audio_manager_->releaseTemporaryTrack(track);
+    }
+
+    void ResourceManager::setSoundTagGain(float gain)
+    {
+        //audio_manager_->setTagGain("sound", gain);
+    }
+
+} // namespace engine::resource
