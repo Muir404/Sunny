@@ -48,7 +48,7 @@ namespace engine::component
          * @param channel 要播放的特定通道，或 -1 表示第一个可用通道。
          * @param use_spatial 是否使用空间定位。
          */
-        void playSound(const std::string &sound_id, int channel = -1, bool use_spatial = false);
+        void playSound(const std::string &sound_id, bool use_spatial = false);
 
         /**
          * @brief 添加音效到映射表。

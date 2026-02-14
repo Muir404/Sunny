@@ -205,7 +205,6 @@ namespace engine::core // 命名空间与路径一致
             SDL_DestroyWindow(window_);
             window_ = nullptr;
         }
-
         is_running_ = false;
         SDL_Quit();
     }

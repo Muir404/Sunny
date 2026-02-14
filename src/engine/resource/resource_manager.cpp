@@ -120,28 +120,8 @@ namespace engine::resource
     {
         font_manager_->clearFonts();
     }
-
-
-
-    // 
-    MIX_Track *ResourceManager::getMusicTrack()
+    MIX_Mixer *ResourceManager::getMixer()
     {
-        return audio_manager_->getNamedTrack("music_main");
+        return audio_manager_->getMixer();
     }
-
-    MIX_Track *ResourceManager::getSoundTrack()
-    {
-        return audio_manager_->getTemporaryTrack();
-    }
-
-    void ResourceManager::releaseSoundTrack(MIX_Track *track)
-    {
-        audio_manager_->releaseTemporaryTrack(track);
-    }
-
-    void ResourceManager::setSoundTagGain(float gain)
-    {
-        //audio_manager_->setTagGain("sound", gain);
-    }
-
 } // namespace engine::resource

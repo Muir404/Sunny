@@ -54,7 +54,7 @@ namespace game::component::ai
             // 如果在地面上
             if (audio_component && jump_timer_ < 0.001f)
             {                                                // 刚刚落地时（进入idle状态），如果有音频组件，播放音效
-                audio_component->playSound("cry", -1, true); // 使用空间音频
+                audio_component->playSound("cry", true); // 使用空间音频
             }
             jump_timer_ += delta_time;             // 增加跳跃计时器
             physics_component->velocity_.x = 0.0f; // 停止水平移动（否则会有惯性）

@@ -10,7 +10,7 @@ struct SDL_Texture;
 struct MIX_Audio;
 struct TTF_Font;
 
-struct MIX_Track;
+struct MIX_Mixer;
 
 namespace engine::resource
 {
@@ -75,11 +75,8 @@ namespace engine::resource
         void unloadFont(const std::string &file_path, int point_size);    ///< @brief 卸载指定的字体资源
         void clearFonts();                                                ///< @brief 清空所有字体资源
 
-        // 给 AudioPlayer 使用的门面接口
-        MIX_Track *getMusicTrack();
-        MIX_Track *getSoundTrack();
-        void releaseSoundTrack(MIX_Track *track);
-        void setSoundTagGain(float gain);
+        // Mixer
+        MIX_Mixer *getMixer();
     };
 
 } // namespace engine::resource
