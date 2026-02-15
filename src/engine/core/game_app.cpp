@@ -27,7 +27,7 @@
 
 #include "../scene/scene_manager.h"
 
-#include "../../game/scene/title_scene.h"
+// include "../../game/scene/title_scene.h" // bad 背离分层架构设计思想
 
 namespace engine::core // 命名空间与路径一致
 {
@@ -70,9 +70,20 @@ namespace engine::core // 命名空间与路径一致
         close(); // 离开游戏则清理
     }
 
+    void GameApp::registerSceneSetup(std::function<void(engine::scene::SceneManager &)> func)
+    {
+        scene_setup_func_ = std::move(func);
+        spdlog::trace("已注册场景设置函数");
+    }
+
     bool GameApp::init()
     {
         spdlog::trace("初始化GameApp……");
+        if (!scene_setup_func_)
+        {
+            spdlog::error("未注册场景设置函数，无法初始化GameAPP");
+            return false;
+        }
 
         if (!initConfig())
         {
@@ -142,9 +153,11 @@ namespace engine::core // 命名空间与路径一致
         // 测试资源管理器
         // testResourceManager();
 
-        // 创建第一个场景并压入栈
-        auto scene = std::make_unique<game::scene::TitleScene>(*context_, *scene_manager_);
-        scene_manager_->requestPushScene(std::move(scene));
+        // // 创建第一个场景并压入栈
+        // auto scene = std::make_unique<game::scene::TitleScene>(*context_, *scene_manager_);
+        // scene_manager_->requestPushScene(std::move(scene));
+
+        scene_setup_func_(*scene_manager_);
 
         is_running_ = true; // 设置为运行状态
         spdlog::trace("GameApp初始化成功");
@@ -305,6 +318,8 @@ namespace engine::core // 命名空间与路径一致
         try
         {
             audio_player_ = std::make_unique<engine::audio::AudioPlayer>(resource_manager_.get());
+            audio_player_->setMusicVolume(config_->music_volume_); // 设置背景音乐音量
+            audio_player_->setSoundVolume(config_->sound_volume_); // 设置音效音量
         }
         catch (const std::exception &e)
         {

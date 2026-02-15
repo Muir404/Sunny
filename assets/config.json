@@ -13,7 +13,7 @@
     },
     "audio": {
         "music_volume": 0.2,
-        "sound_volume": 0.5
+        "sound_volume": 0.2
     },
     "input_mappings": {
         "pause": [

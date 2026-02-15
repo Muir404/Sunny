@@ -76,8 +76,8 @@ namespace game::scene
             return;
         }
         // 设置音量
-        context_.getAudioPlayer().setMusicVolume(0.2f);
-        context_.getAudioPlayer().setSoundVolume(0.5f);
+        // context_.getAudioPlayer().setMusicVolume(0.2f);
+        // context_.getAudioPlayer().setSoundVolume(0.5f);
 
         // 设置背景音乐
         context_.getAudioPlayer().playMusic("assets/audio/platformer_level03_loop.ogg");

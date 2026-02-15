@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <functional>
 
 // 前向声明，减少头文件依赖，加速编译
 struct SDL_Window;
@@ -51,6 +52,9 @@ namespace engine::core // 命名空间与路径一致
         SDL_Renderer *sdl_renderer_ = nullptr;
         bool is_running_ = false;
 
+        // 场景设置函数，用于在游戏前设置初始场景（GameApp）不负责决定初始场景
+        std::function<void(engine::scene::SceneManager &)> scene_setup_func_;
+
         // 引擎组件
         std::unique_ptr<engine::core::Time> time_;
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
@@ -70,6 +74,8 @@ namespace engine::core // 命名空间与路径一致
         ~GameApp();
 
         void run();
+
+        void registerSceneSetup(std::function<void(engine::scene::SceneManager &)> func);
 
         // 由于不需要移动构造和复制构造等内容，此处做delete处理
         GameApp(const GameApp &) = delete;
