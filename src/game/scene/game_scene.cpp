@@ -31,6 +31,7 @@
 #include "../../engine/ui/ui_panel.h"
 #include "../../engine/ui/ui_label.h"
 #include "../../engine/ui/ui_image.h"
+#include "../../engine/ui/ui_button.h"
 
 #include "../component/player_component.h"
 #include "../component/ai_component.h"
@@ -93,9 +94,6 @@ namespace game::scene
             return;
         }
 
-        context_.getAudioPlayer().setMusicVolume(0.2f);
-        context_.getAudioPlayer().setSoundVolume(0.5f);
-
         context_.getAudioPlayer().playMusic("assets/audio/hurry_up_and_run.ogg", true, 1000);
 
         Scene::init();
@@ -157,6 +155,7 @@ namespace game::scene
         // 设置相机边界
         auto world_size = main_layer->getComponent<engine::component::TileLayerComponent>()->getWorldSize();
         context_.getCamera().setLimitBounds(engine::utils::Rect{glm::vec2(0.0f), world_size});
+        context_.getCamera().setPosition(glm::vec2(0.0f));
 
         // 设置世界边界
         context_.getPhysicsEngine().setWorldBounds(engine::utils::Rect{glm::vec2(0.0f), world_size});
@@ -251,6 +250,7 @@ namespace game::scene
 
         createScoreUI();
         createHealthUI();
+        // createTestButtion();
 
         return true;
     }
@@ -468,6 +468,7 @@ namespace game::scene
     {
         // 创建得分标签
         auto score_text = "Score: " + std::to_string(game_session_data_->getCurrentScore());
+        spdlog::info("aaaaaaaa{}", std::to_string(game_session_data_->getCurrentScore()));
         auto score_label = std::make_unique<engine::ui::UILabel>(context_.getTextRenderer(),
                                                                  score_text,
                                                                  "assets/fonts/VonwaonBitmap-16px.ttf",
@@ -549,7 +550,25 @@ namespace game::scene
             health_panel_->getChildren()[i]->setVisible(i - max_health < current_health);
         }
     }
+
     /*
+    void GameScene::createTestButtion()
+    {
+        auto test_button = std::make_unique<engine::ui::UIButton>(context_,
+                                                                  "assets/textures/UI/buttons/Start1.png",
+                                                                  "assets/textures/UI/buttons/Start2.png",
+                                                                  "assets/textures/UI/buttons/Start3.png",
+                                                                  glm::vec2(100.0f, 100.0f),
+                                                                  glm::vec2(0.0f), // 采用图片大小
+                                                                  [this]()
+                                                                  { this->testButtonClicked(); });
+        ui_manager_->addElement(std::move(test_button));
+    }
+    void GameScene::testButtonClicked()
+    {
+        spdlog::info("按钮被点击了！");
+    }
+
     void GameScene::testSaveAndLoad()
     {
         auto input_manager = context_.getInputManager();

@@ -46,13 +46,6 @@ namespace game::scene
         void clean() override;
 
     private:
-        // void createTestObject();
-        // void testCamera();
-        // void TestObject();
-        // void TestPlayer();
-        // void TestCollisionParis();
-        // void testHealth();
-
         [[nodiscard]] bool initLevel();
         [[nodiscard]] bool initPlayer();
         [[nodiscard]] bool initEnemyAndItem();
@@ -81,8 +74,16 @@ namespace game::scene
         void healWithUI(int amount);    // 增加生命，更新UI
         void updateHealthWithUI();      // 更新生命UI
 
+        // void createTestButtion();
+        // void testButtonClicked();
         // void testSaveAndLoad();
         // void testTextRenderer();
+        // void createTestObject();
+        // void testCamera();
+        // void TestObject();
+        // void TestPlayer();
+        // void TestCollisionParis();
+        // void testHealth();
     };
 
 } // namespace game::scene

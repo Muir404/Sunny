@@ -53,14 +53,14 @@ namespace game::data
         void setHighScore(int high_score) { high_score_ = high_score; }
         void setLevelHealth(int level_health) { level_health_ = level_health; }
         void setLevelScore(int level_score) { level_score_ = level_score; }
-        void setMapPath(std::string_view map_path) { map_path_ = map_path; }
+        void setMapPath(const std::string &map_path) { map_path_ = map_path; }
         void setIsWin(bool is_win) { is_win_ = is_win; }
 
-        void reset();                                     ///< @brief 重置游戏数据以准备开始新游戏（保留最高分）
-        void setNextLevel(std::string_view map_path);     ///< @brief 设置下一个场景信息（地图、关卡开始时的得分生命）
-        bool saveToFile(std::string_view filename) const; ///< @brief 将当前游戏数据保存到JSON文件（存档）
-        bool loadFromFile(std::string_view filename);     ///< @brief 从JSON文件中读取游戏数据（读档）
-        bool syncHighScore(std::string_view filename);    ///< @brief 同步最高分(文件与当前分数取最大值)
+        void reset();                                       ///< @brief 重置游戏数据以准备开始新游戏（保留最高分）
+        void setNextLevel(const std::string &map_path);     ///< @brief 设置下一个场景信息（地图、关卡开始时的得分生命）
+        bool saveToFile(const std::string &filename) const; ///< @brief 将当前游戏数据保存到JSON文件（存档）
+        bool loadFromFile(const std::string &filename);     ///< @brief 从JSON文件中读取游戏数据（读档）
+        bool syncHighScore(const std::string &filename);    ///< @brief 同步最高分(文件与当前分数取最大值)
     };
 
 } // namespace game::state

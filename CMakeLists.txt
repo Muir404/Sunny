@@ -361,15 +361,24 @@ set(SOURCES
     src/engine/scene/scene_manager.cpp
     src/engine/scene/level_loader.cpp
 
+    # engine-ui-state
+    src/engine/ui/state/ui_hover_state.cpp
+    src/engine/ui/state/ui_pressed_state.cpp
+    src/engine/ui/state/ui_normal_state.cpp
+
     # engine-ui
     src/engine/ui/ui_element.cpp
     src/engine/ui/ui_manager.cpp
     src/engine/ui/ui_panel.cpp
     src/engine/ui/ui_label.cpp
     src/engine/ui/ui_image.cpp
+    src/engine/ui/ui_button.cpp
+    src/engine/ui/ui_interactive.cpp
     
     # game-scene
     src/game/scene/game_scene.cpp
+    src/game/scene/title_scene.cpp
+    src/game/scene/helps_scene.cpp
 
     # game-component
     src/game/component/player_component.cpp

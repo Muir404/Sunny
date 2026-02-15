@@ -26,7 +26,7 @@
 
 #include "../scene/scene_manager.h"
 
-#include "../../game/scene/game_scene.h"
+#include "../../game/scene/title_scene.h"
 
 namespace engine::core // 命名空间与路径一致
 {
@@ -137,7 +137,7 @@ namespace engine::core // 命名空间与路径一致
         // testResourceManager();
 
         // 创建第一个场景并压入栈
-        auto scene = std::make_unique<game::scene::GameScene>(*context_, *scene_manager_);
+        auto scene = std::make_unique<game::scene::TitleScene>(*context_, *scene_manager_);
         scene_manager_->requestPushScene(std::move(scene));
 
         is_running_ = true; // 设置为运行状态
