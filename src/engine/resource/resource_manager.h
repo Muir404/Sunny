@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>      // 用于 std::unique_ptr
 #include <string>      // 用于 std::string
-#include <string_view> // 用于 const std::string &
+#include <string_view> // 用于 std::string_view
 #include <glm/glm.hpp>
 
 // 前向声明 SDL 类型
@@ -51,29 +51,29 @@ namespace engine::resource
 
         // --- 统一资源访问接口 ---
         // -- Texture --
-        SDL_Texture *loadTexture(const std::string &file_path); ///< @brief 载入纹理资源
-        SDL_Texture *getTexture(const std::string &file_path);  ///< @brief 尝试获取已加载纹理的指针，如果未加载则尝试加载
-        void unloadTexture(const std::string &file_path);       ///< @brief 卸载指定的纹理资源
-        glm::vec2 getTextureSize(const std::string &file_path); ///< @brief 获取指定纹理的尺寸
-        void clearTextures();                                   ///< @brief 清空所有纹理资源
+        SDL_Texture *loadTexture(std::string_view file_path); ///< @brief 载入纹理资源
+        SDL_Texture *getTexture(std::string_view file_path);  ///< @brief 尝试获取已加载纹理的指针，如果未加载则尝试加载
+        void unloadTexture(std::string_view file_path);       ///< @brief 卸载指定的纹理资源
+        glm::vec2 getTextureSize(std::string_view file_path); ///< @brief 获取指定纹理的尺寸
+        void clearTextures();                                 ///< @brief 清空所有纹理资源
 
         // -- Sound Effects (Chunks) --
-        MIX_Audio *loadSound(const std::string &file_path); ///< @brief 载入音效资源
-        MIX_Audio *getSound(const std::string &file_path);  ///< @brief 尝试获取已加载音效的指针，如果未加载则尝试加载
-        void unloadSound(const std::string &file_path);     ///< @brief 卸载指定的音效资源
-        void clearSounds();                                 ///< @brief 清空所有音效资源
+        MIX_Audio *loadSound(std::string_view file_path); ///< @brief 载入音效资源
+        MIX_Audio *getSound(std::string_view file_path);  ///< @brief 尝试获取已加载音效的指针，如果未加载则尝试加载
+        void unloadSound(std::string_view file_path);     ///< @brief 卸载指定的音效资源
+        void clearSounds();                               ///< @brief 清空所有音效资源
 
         // -- Music --
-        MIX_Audio *loadMusic(const std::string &file_path); ///< @brief 载入音乐资源
-        MIX_Audio *getMusic(const std::string &file_path);  ///< @brief 尝试获取已加载音乐的指针，如果未加载则尝试加载
-        void unloadMusic(const std::string &file_path);     ///< @brief 卸载指定的音乐资源
-        void clearMusic();                                  ///< @brief 清空所有音乐资源
+        MIX_Audio *loadMusic(std::string_view file_path); ///< @brief 载入音乐资源
+        MIX_Audio *getMusic(std::string_view file_path);  ///< @brief 尝试获取已加载音乐的指针，如果未加载则尝试加载
+        void unloadMusic(std::string_view file_path);     ///< @brief 卸载指定的音乐资源
+        void clearMusic();                                ///< @brief 清空所有音乐资源
 
         // -- Fonts --
-        TTF_Font *loadFont(const std::string &file_path, int point_size); ///< @brief 载入字体资源
-        TTF_Font *getFont(const std::string &file_path, int point_size);  ///< @brief 尝试获取已加载字体的指针，如果未加载则尝试加载
-        void unloadFont(const std::string &file_path, int point_size);    ///< @brief 卸载指定的字体资源
-        void clearFonts();                                                ///< @brief 清空所有字体资源
+        TTF_Font *loadFont(std::string_view file_path, int point_size); ///< @brief 载入字体资源
+        TTF_Font *getFont(std::string_view file_path, int point_size);  ///< @brief 尝试获取已加载字体的指针，如果未加载则尝试加载
+        void unloadFont(std::string_view file_path, int point_size);    ///< @brief 卸载指定的字体资源
+        void clearFonts();                                              ///< @brief 清空所有字体资源
 
         // Mixer
         MIX_Mixer *getMixer();

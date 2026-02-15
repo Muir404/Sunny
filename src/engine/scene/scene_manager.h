@@ -31,7 +31,7 @@ namespace engine::scene
             Push,
             Pop,
             Replace
-        };                                                   ///< @brief 待处理的动作
+        }; ///< @brief 待处理的动作
         PendingAction pending_action_ = PendingAction::None; ///< @brief 待处理的动作
         std::unique_ptr<Scene> pending_scene_;               ///< @brief 待处理场景
 

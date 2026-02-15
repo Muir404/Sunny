@@ -45,14 +45,14 @@ namespace game::data
         spdlog::info("SessionData reset.");
     }
 
-    void SessionData::setNextLevel(const std::string &map_path)
+    void SessionData::setNextLevel(std::string_view map_path)
     {
         map_path_ = map_path;
         level_health_ = current_health_;
         level_score_ = current_score_;
     }
 
-    bool SessionData::saveToFile(const std::string &filename) const
+    bool SessionData::saveToFile(std::string_view filename) const
     {
         nlohmann::json j;
         try
@@ -88,7 +88,7 @@ namespace game::data
         }
     }
 
-    bool SessionData::loadFromFile(const std::string &filename)
+    bool SessionData::loadFromFile(std::string_view filename)
     {
         try
         {
@@ -124,7 +124,7 @@ namespace game::data
         }
     }
 
-    bool SessionData::syncHighScore(const std::string &filename)
+    bool SessionData::syncHighScore(std::string_view filename)
     {
         try
         {

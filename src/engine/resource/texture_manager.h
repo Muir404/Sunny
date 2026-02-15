@@ -83,7 +83,7 @@ namespace engine::resource
          * @param file_path 纹理文件路径（支持BMP/PNG/JPG等）
          * @return 成功返回SDL_Texture指针，失败返回nullptr
          */
-        SDL_Texture *loadTexture(const std::string &file_path);
+        SDL_Texture *loadTexture(std::string_view file_path);
 
         /**
          * @brief 获取已加载的纹理（不存在则尝试自动加载）
@@ -91,14 +91,14 @@ namespace engine::resource
          * @param file_path 纹理文件路径
          * @return 成功返回SDL_Texture指针，失败返回nullptr
          */
-        SDL_Texture *getTexture(const std::string &file_path);
+        SDL_Texture *getTexture(std::string_view file_path);
 
         /**
          * @brief 卸载指定路径的纹理资源
          *
          * @param file_path 纹理文件路径
          */
-        void unloadTexture(const std::string &file_path);
+        void unloadTexture(std::string_view file_path);
 
         /**
          * @brief 获取纹理资源的尺寸（宽/高）
@@ -106,7 +106,7 @@ namespace engine::resource
          * @param file_path 纹理文件路径
          * @return 包含宽高的glm::vec2（x=宽，y=高），失败返回(0,0)
          */
-        glm::vec2 getTextureSize(const std::string &file_path);
+        glm::vec2 getTextureSize(std::string_view file_path);
 
         /**
          * @brief 清空所有已加载的纹理资源

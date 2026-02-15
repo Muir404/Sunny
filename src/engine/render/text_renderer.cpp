@@ -50,7 +50,7 @@ namespace engine::render
         TTF_Quit(); // 一定要确保在ResourceManager销毁之后调用
     }
 
-    void TextRenderer::drawUIText(const std::string &text, const std::string &font_id, int font_size,
+    void TextRenderer::drawUIText(std::string_view text, std::string_view font_id, int font_size,
                                   const glm::vec2 &position, const engine::utils::FColor &color)
     {
         /* 构造函数已经保证了必要指针不会为空，这里不需要再检查 */
@@ -87,7 +87,7 @@ namespace engine::render
         TTF_DestroyText(temp_text_object);
     }
 
-    void TextRenderer::drawText(const Camera &camera, const std::string &text, const std::string &font_id, int font_size,
+    void TextRenderer::drawText(const Camera &camera, std::string_view text, std::string_view font_id, int font_size,
                                 const glm::vec2 &position, const engine::utils::FColor &color)
     {
         // 应用相机变换
@@ -97,7 +97,7 @@ namespace engine::render
         drawUIText(text, font_id, font_size, position_screen, color);
     }
 
-    glm::vec2 TextRenderer::getTextSize(const std::string &text, const std::string &font_id, int font_size)
+    glm::vec2 TextRenderer::getTextSize(std::string_view text, std::string_view font_id, int font_size)
     {
         /* 构造函数已经保证了必要指针不会为空，这里不需要再检查 */
         TTF_Font *font = resource_manager_->getFont(font_id, font_size);

@@ -67,7 +67,7 @@ namespace game::scene
          * @param center_pos 特效中心位置
          * @param tag 特效标签（决定特效类型,例如"enemy","item"）
          */
-        void createEffect(glm::vec2 center_pos, const std::string &tag);
+        void createEffect(glm::vec2 center_pos, std::string_view tag);
 
         // UI
         void createScoreUI();           // 得分UI

@@ -11,7 +11,7 @@
 
 namespace engine::scene
 {
-    Scene::Scene(const std::string &name, engine::core::Context &context, engine::scene::SceneManager &scene_manager)
+    Scene::Scene(std::string_view name, engine::core::Context &context, engine::scene::SceneManager &scene_manager)
         : scene_name_(name),
           context_(context),
           scene_manager_(scene_manager),

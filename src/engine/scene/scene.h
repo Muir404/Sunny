@@ -47,7 +47,7 @@ namespace engine::scene
          * @param context 场景上下文。
          * @param scene_manager 场景管理器。
          */
-        Scene(const std::string &name, engine::core::Context &context, engine::scene::SceneManager &scene_manager);
+        Scene(std::string_view name, engine::core::Context &context, engine::scene::SceneManager &scene_manager);
 
         virtual ~Scene(); // 1. 基类必须声明虚析构函数才能让派生类析构函数被正确调用。
                           // 2. 析构函数定义必须写在cpp中，不然需要引入GameObject头文件

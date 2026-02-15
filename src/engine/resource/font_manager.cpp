@@ -59,7 +59,7 @@ namespace engine::resource
      * @param point_size 字体大小（像素单位，必须大于0）
      * @return 成功返回TTF_Font指针，失败返回nullptr
      */
-    TTF_Font *FontManager::loadFont(const std::string &file_path, int point_size)
+    TTF_Font *FontManager::loadFont(std::string_view file_path, int point_size)
     {
         // 检查点大小是否有效
         if (point_size <= 0)
@@ -100,7 +100,7 @@ namespace engine::resource
      * @param point_size 字体大小
      * @return 成功返回TTF_Font指针，失败返回nullptr
      */
-    TTF_Font *FontManager::getFont(const std::string &file_path, int point_size)
+    TTF_Font *FontManager::getFont(std::string_view file_path, int point_size)
     {
         FontKey key = {std::string(file_path), point_size};
         auto it = fonts_.find(key);
@@ -119,7 +119,7 @@ namespace engine::resource
      * @param file_path 字体文件路径
      * @param point_size 字体大小
      */
-    void FontManager::unloadFont(const std::string &file_path, int point_size)
+    void FontManager::unloadFont(std::string_view file_path, int point_size)
     {
         FontKey key = {std::string(file_path), point_size};
         auto it = fonts_.find(key);

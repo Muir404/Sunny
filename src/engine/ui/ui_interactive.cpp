@@ -29,7 +29,7 @@ namespace engine::ui
         state_->enter();
     }
 
-    void UIInteractive::addSprite(const std::string &name, std::unique_ptr<engine::render::Sprite> sprite)
+    void UIInteractive::addSprite(std::string_view name, std::unique_ptr<engine::render::Sprite> sprite)
     {
         // 可交互UI元素必须有一个size用于交互检测，因此如果参数列表中没有指定，则用图片大小作为size
         if (size_.x == 0.0f && size_.y == 0.0f)
@@ -40,7 +40,7 @@ namespace engine::ui
         sprites_[std::string(name)] = std::move(sprite);
     }
 
-    void UIInteractive::setSprite(const std::string &name)
+    void UIInteractive::setSprite(std::string_view name)
     {
         if (sprites_.find(std::string(name)) != sprites_.end())
         {
@@ -52,12 +52,12 @@ namespace engine::ui
         }
     }
 
-    void UIInteractive::addSound(const std::string &name, const std::string &path)
+    void UIInteractive::addSound(std::string_view name, std::string_view path)
     {
         sounds_[std::string(name)] = path;
     }
 
-    void UIInteractive::playSound(const std::string &name)
+    void UIInteractive::playSound(std::string_view name)
     {
         if (sounds_.find(std::string(name)) != sounds_.end())
         {

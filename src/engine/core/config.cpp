@@ -6,13 +6,14 @@
 
 namespace engine::core
 {
-    Config::Config(const std::string &filepath)
+    Config::Config(std::string_view filepath)
     {
         loadFromFile(filepath);
     }
-    bool Config::loadFromFile(const std::string &filepath)
+    bool Config::loadFromFile(std::string_view filepath)
     {
-        std::ifstream file(filepath);
+        auto path = std::filesystem::path(filepath); // 把stringview转化为文件路径或者string
+        std::ifstream file(path);                    // ifstream不支持stringview
         if (!file.is_open())
         {
             spdlog::warn("配置文件 '{}' 未找到。使用默认设置并创建默认配置文件。", filepath);
@@ -38,9 +39,10 @@ namespace engine::core
         }
         return false;
     }
-    bool Config::saveToFile(const std::string &filepath)
+    bool Config::saveToFile(std::string_view filepath)
     {
-        std::ofstream file(filepath);
+        auto path = std::filesystem::path(filepath); // 把stringview转化为文件路径或者string
+        std::ofstream file(path);
         if (!file.is_open())
         {
             spdlog::error("无法打开配置文件'{}'进行写入", filepath);

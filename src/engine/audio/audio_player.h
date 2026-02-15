@@ -61,7 +61,7 @@ namespace engine::audio
          * @param sound_path 音效文件的路径。
          * @return 音效正在播放的通道，出错时返回 -1。
          */
-        bool playSound(const std::string &sound_path);
+        bool playSound(std::string_view sound_path);
 
         /**
          * @brief 播放背景音乐。如果正在播放，则淡出之前的音乐。
@@ -71,7 +71,7 @@ namespace engine::audio
          * @param fade_in_ms 音乐淡入的时间（毫秒）（0 表示不淡入）。默认为 0。
          * @return 成功返回 true，出错返回 false。
          */
-        bool playMusic(const std::string &music_path, int loops = -1, int fade_in_ms = 0);
+        bool playMusic(std::string_view music_path, int loops = -1, int fade_in_ms = 0);
 
         /**
          * @brief 停止当前正在播放的背景音乐。

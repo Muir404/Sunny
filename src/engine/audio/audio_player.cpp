@@ -75,7 +75,7 @@ namespace engine::audio
      * @param volume 可选音量（0.0f~1.0f），不指定则使用默认音效音量
      * @return 播放音效的轨道指针（播放结束后需调用 releaseSoundTrack 释放）
      */
-    bool AudioPlayer::playSound(const std::string &sound_path)
+    bool AudioPlayer::playSound(std::string_view sound_path)
     {
         MIX_Audio *sound = resource_manager_->getSound(sound_path);
         if (!sound)
@@ -126,7 +126,7 @@ namespace engine::audio
      * @param fade_in_ms 淡入时长（毫秒，0=无淡入）
      * @return 播放成功返回 true，失败返回 false
      */
-    bool AudioPlayer::playMusic(const std::string &music_path, int loops, int fade_in_ms)
+    bool AudioPlayer::playMusic(std::string_view music_path, int loops, int fade_in_ms)
     {
         // 1. 判重：当前已在播放该音乐，直接返回成功
         if (music_path == current_music_)

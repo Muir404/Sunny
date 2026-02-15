@@ -41,17 +41,17 @@ namespace engine::resource
      * @param file_path 纹理文件路径（支持BMP/PNG/JPG等）
      * @return 成功返回SDL_Texture指针，失败返回nullptr
      */
-    SDL_Texture *TextureManager::loadTexture(const std::string &file_path)
+    SDL_Texture *TextureManager::loadTexture(std::string_view file_path)
     {
         // 检查是否已经加载
-        auto it = textures_.find(file_path);
+        auto it = textures_.find(std::string(file_path));
         if (it != textures_.end())
         {
             return it->second.get();
         }
 
         // 如果没有加载则尝试加载
-        SDL_Texture *raw_texture = IMG_LoadTexture(renderer_, file_path.c_str());
+        SDL_Texture *raw_texture = IMG_LoadTexture(renderer_, file_path.data());
 
         if (!SDL_SetTextureScaleMode(raw_texture, SDL_SCALEMODE_NEAREST)) // 最邻近插值优化画面
         {
@@ -75,9 +75,9 @@ namespace engine::resource
      * @param file_path 纹理文件路径
      * @return 成功返回SDL_Texture指针，失败返回nullptr
      */
-    SDL_Texture *TextureManager::getTexture(const std::string &file_path)
+    SDL_Texture *TextureManager::getTexture(std::string_view file_path)
     {
-        auto it = textures_.find(file_path);
+        auto it = textures_.find(std::string(file_path));
         if (it != textures_.end())
         {
             return it->second.get();
@@ -93,9 +93,9 @@ namespace engine::resource
      *
      * @param file_path 纹理文件路径
      */
-    void TextureManager::unloadTexture(const std::string &file_path)
+    void TextureManager::unloadTexture(std::string_view file_path)
     {
-        auto it = textures_.find(file_path);
+        auto it = textures_.find(std::string(file_path));
         if (it != textures_.end())
         {
             spdlog::debug("卸载纹理：{}", file_path);
@@ -113,7 +113,7 @@ namespace engine::resource
      * @param file_path 纹理文件路径
      * @return 包含宽高的glm::vec2（x=宽，y=高），失败返回(0,0)
      */
-    glm::vec2 TextureManager::getTextureSize(const std::string &file_path)
+    glm::vec2 TextureManager::getTextureSize(std::string_view file_path)
     {
         SDL_Texture *texture = getTexture(file_path);
         if (!texture)

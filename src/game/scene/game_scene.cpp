@@ -456,7 +456,7 @@ namespace game::scene
     void GameScene::toNextLevel(engine::object::GameObject *trigger)
     {
         auto scene_name = trigger->getName();
-        auto map_path = levelNameToPath(scene_name);
+        auto map_path = levelNameToPath(std::string(scene_name));
         game_session_data_->setNextLevel(map_path);
         auto next_scene = std::make_unique<game::scene::GameScene>(context_, scene_manager_, game_session_data_);
         scene_manager_.requestReplaceScene(std::move(next_scene));
@@ -470,7 +470,7 @@ namespace game::scene
         scene_manager_.requestPushScene(std::move(end_scene));
     }
 
-    void GameScene::createEffect(glm::vec2 center_pos, const std::string &tag)
+    void GameScene::createEffect(glm::vec2 center_pos, std::string_view tag)
     {
         // --- 创建游戏对象和变换组件 ---
         auto effect_obj = std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));

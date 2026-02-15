@@ -58,12 +58,12 @@ namespace engine::component
     {
         if (!animation)
             return;
-        const std::string &name = animation->getName(); // 获取名称
+        std::string_view name = animation->getName(); // 获取名称
         animations_[std::string(name)] = std::move(animation);
         spdlog::debug("已将动画 '{}' 添加到 GameObject '{}'", name, owner_ ? owner_->getName() : "未知");
     }
 
-    void AnimationComponent::playAnimation(const std::string &name)
+    void AnimationComponent::playAnimation(std::string_view name)
     {
         auto it = animations_.find(std::string(name));
         if (it == animations_.end() || !it->second)
@@ -95,7 +95,7 @@ namespace engine::component
     {
         if (current_animation_)
         {
-            return current_animation_->getName();
+            return std::string(current_animation_->getName());
         }
         return ""; // 返回一个空的string
     }

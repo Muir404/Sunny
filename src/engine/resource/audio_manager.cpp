@@ -47,11 +47,11 @@ namespace engine::resource
     }
 
     // ========================== 音效管理（Sound） ==========================
-    MIX_Audio *AudioManager::loadSound(const std::string &file_path)
+    MIX_Audio *AudioManager::loadSound(std::string_view file_path)
     {
         // 检查缓存，避免重复加载
         // 负责实际从文件加载音效，并存入缓存
-        auto it = sounds_.find(file_path);
+        auto it = sounds_.find(std::string(file_path));
         if (it != sounds_.end())
         {
             spdlog::trace("[AudioManager] 音效已缓存，直接返回: {}", file_path);
@@ -60,7 +60,7 @@ namespace engine::resource
 
         // 加载音效文件（predecode=false：不预解码，播放时实时解码，节省内存）
         spdlog::debug("[AudioManager] 开始加载音效: {}", file_path);
-        MIX_Audio *audio = MIX_LoadAudio(mixer_, file_path.c_str(), false);
+        MIX_Audio *audio = MIX_LoadAudio(mixer_, file_path.data(), false);
         if (!audio)
         {
             spdlog::error("[AudioManager] 加载音效失败: {} | 错误信息: {}", file_path, SDL_GetError());
@@ -74,11 +74,11 @@ namespace engine::resource
         return audio; // 返回一个音频载体，待绑定播放
     }
 
-    MIX_Audio *AudioManager::getSound(const std::string &file_path)
+    MIX_Audio *AudioManager::getSound(std::string_view file_path)
     {
         // 优先从缓存获取
         // 负责对外提供音效，优先查缓存，无则调用加载器
-        auto it = sounds_.find(file_path);
+        auto it = sounds_.find(std::string(file_path));
         if (it != sounds_.end())
         {
             return it->second.get();
@@ -87,9 +87,9 @@ namespace engine::resource
         return loadSound(file_path);
     }
 
-    void AudioManager::unloadSound(const std::string &file_path)
+    void AudioManager::unloadSound(std::string_view file_path)
     {
-        auto it = sounds_.find(file_path);
+        auto it = sounds_.find(std::string(file_path));
         if (it != sounds_.end())
         {
             spdlog::debug("[AudioManager] 卸载音效资源: {}", file_path);
@@ -111,10 +111,10 @@ namespace engine::resource
     }
 
     // ========================== 音乐管理（Music） ==========================
-    MIX_Audio *AudioManager::loadMusic(const std::string &file_path)
+    MIX_Audio *AudioManager::loadMusic(std::string_view file_path)
     {
         // 检查缓存，避免重复加载
-        auto it = music_.find(file_path);
+        auto it = music_.find(std::string(file_path));
         if (it != music_.end())
         {
             spdlog::trace("[AudioManager] 音乐已缓存，直接返回: {}", file_path);
@@ -123,7 +123,7 @@ namespace engine::resource
 
         // 加载音乐文件（predecode=true：预解码为 PCM 数据，适合长音频流式播放）
         spdlog::debug("[AudioManager] 开始加载音乐: {}", file_path);
-        MIX_Audio *audio = MIX_LoadAudio(mixer_, file_path.c_str(), true);
+        MIX_Audio *audio = MIX_LoadAudio(mixer_, file_path.data(), true);
         if (!audio)
         {
             spdlog::error("[AudioManager] 加载音乐失败: {} | 错误信息: {}", file_path, SDL_GetError());
@@ -137,10 +137,10 @@ namespace engine::resource
         return audio;
     }
 
-    MIX_Audio *AudioManager::getMusic(const std::string &file_path)
+    MIX_Audio *AudioManager::getMusic(std::string_view file_path)
     {
         // 优先从缓存获取
-        auto it = music_.find(file_path);
+        auto it = music_.find(std::string(file_path));
         if (it != music_.end())
         {
             return it->second.get();
@@ -151,9 +151,9 @@ namespace engine::resource
         return loadMusic(file_path);
     }
 
-    void AudioManager::unloadMusic(const std::string &file_path)
+    void AudioManager::unloadMusic(std::string_view file_path)
     {
-        auto it = music_.find(file_path);
+        auto it = music_.find(std::string(file_path));
         if (it != music_.end())
         {
             spdlog::debug("[AudioManager] 卸载音乐资源: {}", file_path);

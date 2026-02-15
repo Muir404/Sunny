@@ -140,7 +140,7 @@ namespace engine::resource
          * @param point_size 字体大小（像素单位）
          * @return 成功返回TTF_Font指针，失败返回nullptr
          */
-        TTF_Font *loadFont(const std::string &file_path, int point_size);
+        TTF_Font *loadFont(std::string_view file_path, int point_size);
 
         /**
          * @brief 获取已加载的字体（不存在则尝试自动加载）
@@ -149,7 +149,7 @@ namespace engine::resource
          * @param point_size 字体大小
          * @return 成功返回TTF_Font指针，失败返回nullptr
          */
-        TTF_Font *getFont(const std::string &file_path, int point_size);
+        TTF_Font *getFont(std::string_view file_path, int point_size);
 
         /**
          * @brief 卸载指定路径+字号的字体资源
@@ -157,7 +157,7 @@ namespace engine::resource
          * @param file_path 字体文件路径
          * @param point_size 字体大小
          */
-        void unloadFont(const std::string &file_path, int point_size);
+        void unloadFont(std::string_view file_path, int point_size);
 
         /**
          * @brief 清空所有已加载的字体资源

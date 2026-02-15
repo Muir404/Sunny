@@ -45,28 +45,28 @@ namespace engine::input
         }
     }
 
-    bool InputManager::isActionDown(const std::string &action_name) const
+    bool InputManager::isActionDown(std::string_view action_name) const
     {
         // C++17 引入的 “带有初始化语句的 if 语句”
-        if (auto it = action_states_.find(action_name); it != action_states_.end())
+        if (auto it = action_states_.find(std::string(action_name)); it != action_states_.end())
         {
             return it->second == ActionState::PRESSED_THIS_FRAME || it->second == ActionState::HELD_DOWN;
         }
         return false;
     }
 
-    bool InputManager::isActionPressed(const std::string &action_name) const
+    bool InputManager::isActionPressed(std::string_view action_name) const
     {
-        if (auto it = action_states_.find(action_name); it != action_states_.end())
+        if (auto it = action_states_.find(std::string(action_name)); it != action_states_.end())
         {
             return it->second == ActionState::PRESSED_THIS_FRAME;
         }
         return false;
     }
 
-    bool InputManager::isActionReleased(const std::string &action_name) const
+    bool InputManager::isActionReleased(std::string_view action_name) const
     {
-        if (auto it = action_states_.find(action_name); it != action_states_.end())
+        if (auto it = action_states_.find(std::string(action_name)); it != action_states_.end())
         {
             return it->second == ActionState::RELEASED_THIS_FRAME;
         }
@@ -206,9 +206,9 @@ namespace engine::input
         spdlog::trace("输入映射初始化完成.");
     }
 
-    void InputManager::updateActionState(const std::string &action_name, bool is_input_active, bool is_repeat_event)
+    void InputManager::updateActionState(std::string_view action_name, bool is_input_active, bool is_repeat_event)
     {
-        auto it = action_states_.find(action_name);
+        auto it = action_states_.find(std::string(action_name));
         if (it == action_states_.end())
         {
             spdlog::warn("尝试更新未注册的动作状态: {}", action_name);
@@ -232,11 +232,11 @@ namespace engine::input
         }
     }
 
-    SDL_Scancode InputManager::scancodeFromString(const std::string &key_name)
+    SDL_Scancode InputManager::scancodeFromString(std::string_view key_name)
     {
-        return SDL_GetScancodeFromName(key_name.c_str());
+        return SDL_GetScancodeFromName(key_name.data());
     }
-    Uint32 InputManager::mouseButtonUint32FromString(const std::string &button_name)
+    Uint32 InputManager::mouseButtonUint32FromString(std::string_view button_name)
     {
         if (button_name == "MouseLeft")
         {

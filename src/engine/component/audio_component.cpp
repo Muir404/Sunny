@@ -31,7 +31,7 @@ namespace engine::component
         }
     }
 
-    void AudioComponent::playSound(const std::string &sound_id,bool use_spatial)
+    void AudioComponent::playSound(std::string_view sound_id, bool use_spatial)
     {
         // 如果 sound_id 是音效 ID，则在查找在map中查找对应的路径； 没找到的话则把 sound_id 当作路径直接使用
         auto sound_path = sound_id_to_path_.find(std::string(sound_id)) != sound_id_to_path_.end() ? sound_id_to_path_[std::string(sound_id)] : sound_id;
@@ -56,7 +56,7 @@ namespace engine::component
         }
     }
 
-    void AudioComponent::addSound(const std::string &sound_id, const std::string &sound_path)
+    void AudioComponent::addSound(std::string_view sound_id, std::string_view sound_path)
     {
         if (sound_id_to_path_.find(std::string(sound_id)) != sound_id_to_path_.end())
         {

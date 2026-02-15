@@ -5,7 +5,7 @@
 namespace engine::render
 {
 
-    Animation::Animation(const std::string &name, bool loop) : name_(name), loop_(loop) {}
+    Animation::Animation(std::string_view name, bool loop) : name_(name), loop_(loop) {}
 
     void Animation::addFrame(SDL_FRect source_rect, float duration)
     {

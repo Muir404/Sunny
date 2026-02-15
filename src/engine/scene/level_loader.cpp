@@ -31,7 +31,7 @@
 
 namespace engine::scene
 {
-    bool LevelLoader::loadLevel(const std::string &level_path, Scene &scene)
+    bool LevelLoader::loadLevel(std::string_view level_path, Scene &scene)
     {
         // 1. 加载 JSON 文件
         auto path = std::filesystem::path(level_path);
@@ -686,7 +686,7 @@ namespace engine::scene
         return std::nullopt;
     }
 
-    void LevelLoader::loadTileset(const std::string &tileset_path, int first_gid)
+    void LevelLoader::loadTileset(std::string_view tileset_path, int first_gid)
     {
         auto path = std::filesystem::path(tileset_path);
         std::ifstream tileset_file(path);
@@ -711,7 +711,7 @@ namespace engine::scene
         spdlog::info("Tileset 文件 '{}' 加载完成，firstgid: {}", tileset_path, first_gid);
     }
 
-    std::string LevelLoader::resolvePath(const std::string &relative_path, const std::string &file_path)
+    std::string LevelLoader::resolvePath(std::string_view relative_path, std::string_view file_path)
     {
         try
         {

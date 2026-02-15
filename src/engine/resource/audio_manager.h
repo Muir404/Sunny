@@ -94,20 +94,20 @@ namespace engine::resource
          * @param file_path 音效文件路径
          * @return 加载成功返回 MIX_Audio 指针，失败返回 nullptr
          */
-        MIX_Audio *loadSound(const std::string &file_path);
+        MIX_Audio *loadSound(std::string_view file_path);
 
         /**
          * @brief 获取音效资源（缓存优先）
          * @param file_path 音效文件路径
          * @return 成功返回 MIX_Audio 指针，失败抛出异常
          */
-        MIX_Audio *getSound(const std::string &file_path);
+        MIX_Audio *getSound(std::string_view file_path);
 
         /**
          * @brief 卸载指定音效资源
          * @param file_path 音效文件路径
          */
-        void unloadSound(const std::string &file_path);
+        void unloadSound(std::string_view file_path);
 
         /**
          * @brief 清空所有音效资源
@@ -119,20 +119,20 @@ namespace engine::resource
          * @param file_path 音乐文件路径
          * @return 加载成功返回 MIX_Audio 指针，失败返回 nullptr
          */
-        MIX_Audio *loadMusic(const std::string &file_path);
+        MIX_Audio *loadMusic(std::string_view file_path);
 
         /**
          * @brief 获取音乐资源（缓存优先）
          * @param file_path 音乐文件路径
          * @return 成功返回 MIX_Audio 指针，失败抛出异常
          */
-        MIX_Audio *getMusic(const std::string &file_path);
+        MIX_Audio *getMusic(std::string_view file_path);
 
         /**
          * @brief 卸载指定音乐资源
          * @param file_path 音乐文件路径
          */
-        void unloadMusic(const std::string &file_path);
+        void unloadMusic(std::string_view file_path);
 
         /**
          * @brief 清空所有音乐资源

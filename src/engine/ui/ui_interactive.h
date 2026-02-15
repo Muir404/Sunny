@@ -38,10 +38,10 @@ namespace engine::ui
 
         virtual void clicked() {} ///< @brief 如果有点击事件，则重写该方法
 
-        void addSprite(const std::string &name, std::unique_ptr<engine::render::Sprite> sprite); ///< @brief 添加精灵
-        void setSprite(const std::string &name);                                                 ///< @brief 设置当前显示的精灵
-        void addSound(const std::string &name, const std::string &path);                         ///< @brief 添加音效
-        void playSound(const std::string &name);                                                 ///< @brief 播放音效
+        void addSprite(std::string_view name, std::unique_ptr<engine::render::Sprite> sprite); ///< @brief 添加精灵
+        void setSprite(std::string_view name);                                                 ///< @brief 设置当前显示的精灵
+        void addSound(std::string_view name, std::string_view path);                           ///< @brief 添加音效
+        void playSound(std::string_view name);                                                 ///< @brief 播放音效
         // --- Getters and Setters ---
         void setState(std::unique_ptr<engine::ui::state::UIState> state);     ///< @brief 设置当前状态
         engine::ui::state::UIState *getState() const { return state_.get(); } ///< @brief 获取当前状态

@@ -7,7 +7,7 @@
 namespace game::component::state
 {
 
-    void PlayerState::playAnimation(const std::string &animation_name)
+    void PlayerState::playAnimation(std::string_view animation_name)
     {
         if (!player_component_)
         {

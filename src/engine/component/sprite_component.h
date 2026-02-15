@@ -49,7 +49,7 @@ namespace engine::component
          * @param is_flipped 初始翻转状态。
          */
         SpriteComponent(
-            const std::string &texture_id,
+            std::string_view texture_id,
             engine::resource::ResourceManager &resource_manager,
             engine::utils::Alignment alignment = engine::utils::Alignment::NONE,
             std::optional<SDL_FRect> source_rect_opt = std::nullopt,
@@ -71,13 +71,13 @@ namespace engine::component
         void updateOffset(); // 更新偏移量(根据当前的 alignment_ 和 sprite_size_ 计算 offset_)。
 
         // Getters
-        const engine::render::Sprite &getSprite() const { return sprite_; }        // 获取精灵对象
-        const std::string &getTextureId() const { return sprite_.getTextureId(); } // 获取纹理ID
-        bool isFlipped() const { return sprite_.isFlipped(); }                     // 获取是否翻转
-        bool isHidden() const { return is_hidden_; }                               // 获取是否隐藏
-        const glm::vec2 &getSpriteSize() const { return sprite_size_; }            // 获取精灵尺寸
-        const glm::vec2 &getOffset() const { return offset_; }                     // 获取偏移量
-        engine::utils::Alignment getAlignment() const { return alignment_; }       // 获取对齐方式
+        const engine::render::Sprite &getSprite() const { return sprite_; }      // 获取精灵对象
+        std::string_view getTextureId() const { return sprite_.getTextureId(); } // 获取纹理ID
+        bool isFlipped() const { return sprite_.isFlipped(); }                   // 获取是否翻转
+        bool isHidden() const { return is_hidden_; }                             // 获取是否隐藏
+        const glm::vec2 &getSpriteSize() const { return sprite_size_; }          // 获取精灵尺寸
+        const glm::vec2 &getOffset() const { return offset_; }                   // 获取偏移量
+        engine::utils::Alignment getAlignment() const { return alignment_; }     // 获取对齐方式
 
         // Setters
         void setSpriteById(std::string &texture_id, std::optional<SDL_FRect> source_rect_opt = std::nullopt); // 设置精灵对象

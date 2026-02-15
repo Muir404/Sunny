@@ -30,7 +30,7 @@ namespace engine::object
         bool need_remove_ = false;                                                                      // 延迟删除的标识，将来由场景类负责删除
 
     public:
-        GameObject(const std::string &name = "", const std::string &tag = ""); // 构造函数。默认名称为空，标签为空
+        GameObject(std::string_view name = "", std::string_view tag = ""); // 构造函数。默认名称为空，标签为空
 
         // 禁止拷贝和移动，确保唯一性 (通常游戏对象不应随意拷贝)
         GameObject(const GameObject &) = delete;
@@ -39,10 +39,10 @@ namespace engine::object
         GameObject &operator=(GameObject &&) = delete;
 
         // setters and getters
-        void setName(const std::string &name) { name_ = name; }              // 设置名称
-        const std::string &getName() const { return name_; }                 // 获取名称
-        void setTag(const std::string &tag) { tag_ = tag; }                  // 设置标签
-        const std::string &getTag() const { return tag_; }                   // 获取标签
+        void setName(std::string_view name) { name_ = name; }                // 设置名称
+        std::string_view getName() const { return name_; }                   // 获取名称
+        void setTag(std::string_view tag) { tag_ = tag; }                    // 设置标签
+        std::string_view getTag() const { return tag_; }                     // 获取标签
         void setNeedRemove(bool need_remove) { need_remove_ = need_remove; } // 设置是否需要删除
         bool isNeedRemove() const { return need_remove_; }                   // 获取是否需要删除
 

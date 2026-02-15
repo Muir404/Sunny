@@ -6,7 +6,7 @@
 
 namespace engine::object
 {
-    GameObject::GameObject(const std::string &name, const std::string &tag) : name_(name), tag_(tag)
+    GameObject::GameObject(std::string_view name, std::string_view tag) : name_(name), tag_(tag)
     {
         spdlog::trace("GameObject created: {} {}", name_, tag_);
     }
