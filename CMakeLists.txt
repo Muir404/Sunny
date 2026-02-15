@@ -381,7 +381,8 @@ set(SOURCES
     src/game/scene/title_scene.cpp
     src/game/scene/helps_scene.cpp
     src/game/scene/menu_scene.cpp
-    
+    src/game/scene/end_scene.cpp
+
     # game-component
     src/game/component/player_component.cpp
     src/game/component/ai_component.cpp

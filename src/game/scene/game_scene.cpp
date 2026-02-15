@@ -44,6 +44,7 @@
 
 #include "game_scene.h"
 #include "menu_scene.h"
+#include "end_scene.h"
 
 #include "../data/session_data.h"
 
@@ -75,6 +76,7 @@ namespace game::scene
         }
         spdlog::trace("GameScene初始化开始");
         context_.getGameState().setState(engine::core::State::Playing);
+        game_session_data_->syncHighScore("assets/save.json");
 
         if (!initLevel())
         {
@@ -115,6 +117,19 @@ namespace game::scene
         Scene::update(delta_time);
         handleObjectCollisons();
         handleTileTriggers();
+
+        // 玩家掉出地图下方则判断为失败
+        if (player_)
+        {
+            auto pos = player_->getComponent<engine::component::TransformComponent>()->getPosition();
+            auto world_rect = context_.getPhysicsEngine().getWorldBounds();
+            // 多100像素冗余量
+            if (world_rect && pos.y > world_rect->position.y + world_rect->size.y + 100.0f)
+            {
+                spdlog::debug("玩家掉出地图下方，游戏失败");
+                showEndScene(false);
+            }
+        }
     }
 
     void GameScene::render()
@@ -193,6 +208,17 @@ namespace game::scene
         if (!player_component)
         {
             spdlog::error("无法添加PlayerComponent到玩家对象");
+            return false;
+        }
+        // 从SessionData中更新玩家生命值
+        if (auto health_component = player_->getComponent<engine::component::HealthComponent>(); health_component)
+        {
+            health_component->setMaxHealth(game_session_data_->getMaxHealth());
+            health_component->setCurrentHealth(game_session_data_->getCurrentHealth());
+        }
+        else
+        {
+            spdlog::error("玩家对象缺少 HealthComponent 组件，无法设置生命值");
             return false;
         }
         // 相机跟随
@@ -319,15 +345,15 @@ namespace game::scene
             {
                 toNextLevel(obj1);
             }
-            // // 处理玩家与结束触发器碰撞
-            // else if (obj1->getName() == "player" && obj2->getName() == "win")
-            // {
-            //     showEndScene(true);
-            // }
-            // else if (obj2->getName() == "player" && obj1->getName() == "win")
-            // {
-            //     showEndScene(true);
-            // }
+            // 处理玩家与结束触发器碰撞
+            else if (obj1->getName() == "player" && obj2->getName() == "win")
+            {
+                showEndScene(true);
+            }
+            else if (obj2->getName() == "player" && obj1->getName() == "win")
+            {
+                showEndScene(true);
+            }
         }
     }
 
@@ -436,6 +462,14 @@ namespace game::scene
         scene_manager_.requestReplaceScene(std::move(next_scene));
     }
 
+    void GameScene::showEndScene(bool is_win)
+    {
+        spdlog::debug("显示结束场景，游戏 {}", is_win ? "胜利" : "失败");
+        game_session_data_->setIsWin(is_win);
+        auto end_scene = std::make_unique<game::scene::EndScene>(context_, scene_manager_, game_session_data_);
+        scene_manager_.requestPushScene(std::move(end_scene));
+    }
+
     void GameScene::createEffect(glm::vec2 center_pos, const std::string &tag)
     {
         // --- 创建游戏对象和变换组件 ---
@@ -512,7 +546,8 @@ namespace game::scene
 
         // --- 根据最大生命值，循环创建生命值图标(添加到UIPanel中) ---
         for (int i = 0; i < max_health; ++i)
-        { // 创建背景图标
+        {
+            // 创建背景图标
             glm::vec2 icon_pos = {start_x + i * (icon_width + spacing), start_y};
             glm::vec2 icon_size = {icon_width, icon_height};
 
@@ -520,7 +555,8 @@ namespace game::scene
             health_panel_->addChild(std::move(bg_icon));
         }
         for (int i = 0; i < max_health; ++i)
-        { // 创建前景图标
+        {
+            // 创建前景图标
             glm::vec2 icon_pos = {start_x + i * (icon_width + spacing), start_y};
             glm::vec2 icon_size = {icon_width, icon_height};
 
