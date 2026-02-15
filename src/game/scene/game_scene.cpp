@@ -29,6 +29,8 @@
 
 #include "../../engine/ui/ui_manager.h"
 #include "../../engine/ui/ui_panel.h"
+#include "../../engine/ui/ui_label.h"
+#include "../../engine/ui/ui_image.h"
 
 #include "../component/player_component.h"
 #include "../component/ai_component.h"
@@ -110,14 +112,13 @@ namespace game::scene
     void GameScene::render()
     {
         Scene::render();
-        testTextRenderer();
+        // testTextRenderer();
     }
 
     void GameScene::handleInput()
     {
         Scene::handleInput();
-        testSaveAndLoad();
-
+        // testSaveAndLoad();
         // testCamera();
         // TestObject();
         // TestPlayer();
@@ -248,9 +249,9 @@ namespace game::scene
             return false;
         }
 
-        ui_manager_->addElement(std::make_unique<engine::ui::UIPanel>(glm::vec2{100.0f, 100.0f},
-                                                                        glm::vec2{200.0f, 200.0f},
-                                                                        engine::utils::FColor{0.5f, 0.0f, 0.0f, 0.3f}));
+        createScoreUI();
+        createHealthUI();
+
         return true;
     }
 
@@ -284,12 +285,12 @@ namespace game::scene
             // 处理玩家与"hazard"对象碰撞
             else if (obj1->getName() == "player" && obj2->getTag() == "hazard")
             {
-                // handlePlayerDamage(1);
+                handlePlayerDamage(1);
                 spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj1->getName());
             }
             else if (obj2->getName() == "player" && obj1->getTag() == "hazard")
             {
-                // handlePlayerDamage(1);
+                handlePlayerDamage(1);
                 spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj2->getName());
             }
 
@@ -348,8 +349,7 @@ namespace game::scene
             // TODO: 可能的死亡逻辑处理
         }
         // 更新生命值及HealthUI
-        // updateHealthWithUI();
-        game_session_data_->setCurrentHealth(player_component->getHealthComponent()->getCurrentHealth());
+        updateHealthWithUI();
     }
 
     void GameScene::playerVSEnemyCollision(engine::object::GameObject *player, engine::object::GameObject *enemy)
@@ -385,14 +385,12 @@ namespace game::scene
             // 播放音效 (此音效完全可以放在玩家的音频组件中，这里示例另一种用法：直接用AudioPlayer播放，传入文件路径)
             context_.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
             // 加分
-            // addScoreWithUI(10);
-            game_session_data_->addScore(10);
+            addScoreWithUI(10);
         }
         // 踩踏判断失败，玩家受伤
         else
         {
             spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->getName(), player->getName());
-            player->getComponent<game::component::PlayerComponent>()->takeDamage(1);
             handlePlayerDamage(1);
         }
     }
@@ -401,12 +399,11 @@ namespace game::scene
     {
         if (item->getName() == "fruit")
         {
-            // healWithUI(1); // 加血
+            healWithUI(1); // 加血
         }
         else if (item->getName() == "gem")
         {
-            // addScoreWithUI(5); // 加5分
-            game_session_data_->addScore(5);
+            addScoreWithUI(5); // 加5分
         }
         item->setNeedRemove(true); // 标记道具为待删除状态
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
@@ -467,6 +464,92 @@ namespace game::scene
         spdlog::debug("创建特效: {}", tag);
     }
 
+    void GameScene::createScoreUI()
+    {
+        // 创建得分标签
+        auto score_text = "Score: " + std::to_string(game_session_data_->getCurrentScore());
+        auto score_label = std::make_unique<engine::ui::UILabel>(context_.getTextRenderer(),
+                                                                 score_text,
+                                                                 "assets/fonts/VonwaonBitmap-16px.ttf",
+                                                                 16);
+        score_label_ = score_label.get();                            // 成员变量赋值（获取裸指针）
+        auto screen_size = ui_manager_->getRootElement()->getSize(); // 获取屏幕尺寸
+        score_label_->setPosition(glm::vec2(screen_size.x - 100.0f, 10.0f));
+        ui_manager_->addElement(std::move(score_label));
+    }
+
+    void GameScene::createHealthUI()
+    {
+        int max_health = game_session_data_->getMaxHealth();
+        int current_health = game_session_data_->getCurrentHealth();
+        float start_x = 10.0f;
+        float start_y = 10.0f;
+        float icon_width = 20.0f;
+        float icon_height = 18.0f;
+        float spacing = 5.0f;
+        std::string full_heart_tex = "assets/textures/UI/Heart.png";
+        std::string empty_heart_tex = "assets/textures/UI/Heart-bg.png";
+
+        // 创建一个默认的UIPanel (不需要背景色，因此大小无所谓，只用于定位)
+        auto health_panel = std::make_unique<engine::ui::UIPanel>();
+        health_panel_ = health_panel.get(); // 成员变量赋值（获取裸指针）
+
+        // --- 根据最大生命值，循环创建生命值图标(添加到UIPanel中) ---
+        for (int i = 0; i < max_health; ++i)
+        { // 创建背景图标
+            glm::vec2 icon_pos = {start_x + i * (icon_width + spacing), start_y};
+            glm::vec2 icon_size = {icon_width, icon_height};
+
+            auto bg_icon = std::make_unique<engine::ui::UIImage>(empty_heart_tex, icon_pos, icon_size);
+            health_panel_->addChild(std::move(bg_icon));
+        }
+        for (int i = 0; i < max_health; ++i)
+        { // 创建前景图标
+            glm::vec2 icon_pos = {start_x + i * (icon_width + spacing), start_y};
+            glm::vec2 icon_size = {icon_width, icon_height};
+
+            auto fg_icon = std::make_unique<engine::ui::UIImage>(full_heart_tex, icon_pos, icon_size);
+            bool is_visible = (i < current_health); // 前景图标的可见性取决于当前生命值
+            fg_icon->setVisible(is_visible);        // 设置前景图标的可见性
+            health_panel_->addChild(std::move(fg_icon));
+        }
+        // 将UIPanel添加到UI管理器中
+        ui_manager_->addElement(std::move(health_panel));
+    }
+
+    void GameScene::addScoreWithUI(int score)
+    {
+        game_session_data_->addScore(score);
+        auto score_text = "Score: " + std::to_string(game_session_data_->getCurrentScore());
+        spdlog::info("得分: {}", score_text);
+        score_label_->setText(score_text);
+    }
+
+    void GameScene::healWithUI(int amount)
+    {
+        player_->getComponent<engine::component::HealthComponent>()->heal(amount);
+        updateHealthWithUI(); // 更新生命值与UI
+    }
+
+    void GameScene::updateHealthWithUI()
+    {
+        if (!player_ || !health_panel_)
+        {
+            spdlog::error("玩家对象或 HealthPanel 不存在，无法更新生命值UI");
+            return;
+        }
+        // 获取当前生命值并更新游戏数据
+        auto current_health = player_->getComponent<engine::component::HealthComponent>()->getCurrentHealth();
+        game_session_data_->setCurrentHealth(current_health);
+        auto max_health = game_session_data_->getMaxHealth();
+
+        // 前景图标是后添加的，因此设置后半段的可见性即可
+        for (auto i = max_health; i < max_health * 2; ++i)
+        {
+            health_panel_->getChildren()[i]->setVisible(i - max_health < current_health);
+        }
+    }
+    /*
     void GameScene::testSaveAndLoad()
     {
         auto input_manager = context_.getInputManager();
@@ -492,7 +575,7 @@ namespace game::scene
         text_renderer.drawText(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(200.0f));
     }
 
-    /*
+
     void GameScene::testHealth()
     {
         auto input_manager = context_.getInputManager();

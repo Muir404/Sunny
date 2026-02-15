@@ -1,6 +1,7 @@
 #pragma once
 #include "../../engine/scene/scene.h"
 #include <memory>
+#include <glm/vec2.hpp>
 
 // 前置声明
 namespace engine::object
@@ -13,6 +14,12 @@ namespace game::data
     class SessionData;
 }
 
+namespace engine::ui
+{
+    class UILabel;
+    class UIPanel;
+}
+
 namespace game::scene
 {
     /**
@@ -22,6 +29,9 @@ namespace game::scene
     {
         std::shared_ptr<game::data::SessionData> game_session_data_;
         engine::object::GameObject *player_ = nullptr;
+
+        engine::ui::UILabel *score_label_ = nullptr;  ///< @brief 得分标签 (生命周期由UIManager管理，因此使用裸指针)
+        engine::ui::UIPanel *health_panel_ = nullptr; ///< @brief 生命值图标面板
 
     public:
         GameScene(engine::core::Context &context,
@@ -54,10 +64,8 @@ namespace game::scene
         void playerVSEnemyCollision(engine::object::GameObject *player, engine::object::GameObject *enemy); ///< @brief 玩家与敌人碰撞处理
         void playerVSItemCollision(engine::object::GameObject *player, engine::object::GameObject *item);   ///< @brief 玩家与道具碰撞处理
 
-        void toNextLevel(engine::object::GameObject *trigger); // 进入下一关
-        std::string levelNameToPath(const std::string &level_name) const { return "assets/maps/" + level_name + ".tmj"; }
-        /// @brief 根据关卡名称获取对应的地图文件路径
-        // std::string levelNameToPath(const std::string & level_name) const { return "assets/maps/" + std::string(level_name) + ".tmj"; }
+        void toNextLevel(engine::object::GameObject *trigger);                                                            // 进入下一关
+        std::string levelNameToPath(const std::string &level_name) const { return "assets/maps/" + level_name + ".tmj"; } /// @brief 根据关卡名称获取对应的地图文件路径
 
         /**
          * @brief 创建一个特效对象（一次性）。
@@ -66,8 +74,15 @@ namespace game::scene
          */
         void createEffect(glm::vec2 center_pos, const std::string &tag);
 
-        void testSaveAndLoad();
-        void testTextRenderer();
+        // UI
+        void createScoreUI();           // 得分UI
+        void createHealthUI();          // 生命值UI
+        void addScoreWithUI(int score); // 增加得分，更新UI
+        void healWithUI(int amount);    // 增加生命，更新UI
+        void updateHealthWithUI();      // 更新生命UI
+
+        // void testSaveAndLoad();
+        // void testTextRenderer();
     };
 
 } // namespace game::scene

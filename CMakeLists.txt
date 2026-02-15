@@ -365,6 +365,8 @@ set(SOURCES
     src/engine/ui/ui_element.cpp
     src/engine/ui/ui_manager.cpp
     src/engine/ui/ui_panel.cpp
+    src/engine/ui/ui_label.cpp
+    src/engine/ui/ui_image.cpp
     
     # game-scene
     src/game/scene/game_scene.cpp
