@@ -44,6 +44,8 @@ namespace game::scene
         void playerVSEnemyCollision(engine::object::GameObject *player, engine::object::GameObject *enemy); ///< @brief 玩家与敌人碰撞处理
         void playerVSItemCollision(engine::object::GameObject *player, engine::object::GameObject *item);   ///< @brief 玩家与道具碰撞处理
 
+        void toNextLevel(engine::object::GameObject *trigger); // 进入下一关
+        std::string levelNameToPath(const std::string &level_name) const { return "assets/maps/" + level_name + ".tmj"; }
         /// @brief 根据关卡名称获取对应的地图文件路径
         // std::string levelNameToPath(const std::string & level_name) const { return "assets/maps/" + std::string(level_name) + ".tmj"; }
 

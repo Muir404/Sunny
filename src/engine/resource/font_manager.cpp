@@ -33,7 +33,7 @@ namespace engine::resource
         {
             throw std::runtime_error("字体管理器错误: TTF_Init 失败：" + std::string(SDL_GetError()));
         }
-        spdlog::info("FontManager: 构造成功");
+        spdlog::trace("FontManager: 构造成功");
     }
 
     /**
@@ -49,7 +49,7 @@ namespace engine::resource
             clearFonts(); // 调用 clearFonts 处理清理逻辑
         }
         TTF_Quit();
-        spdlog::info("FontManager: 析构成功");
+        spdlog::trace("FontManager: 析构成功");
     }
 
     /**

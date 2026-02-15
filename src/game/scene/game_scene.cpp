@@ -111,7 +111,8 @@ namespace game::scene
     {
         // 加载关卡
         engine::scene::LevelLoader level_loader;
-        if (!level_loader.loadLevel("assets/maps/level1.tmj", *this))
+        auto level_path = levelNameToPath(scene_name_);
+        if (!level_loader.loadLevel(level_path, *this))
         {
             spdlog::error("关卡加载失败");
             return false;
@@ -256,15 +257,15 @@ namespace game::scene
                 spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj2->getName());
             }
 
-            // // 处理玩家与关底触发器碰撞
-            // else if (obj1->getName() == "player" && obj2->getTag() == "next_level")
-            // {
-            //     toNextLevel(obj2);
-            // }
-            // else if (obj2->getName() == "player" && obj1->getTag() == "next_level")
-            // {
-            //     toNextLevel(obj1);
-            // }
+            // 处理玩家与关底触发器碰撞
+            else if (obj1->getName() == "player" && obj2->getTag() == "next_level")
+            {
+                toNextLevel(obj2);
+            }
+            else if (obj2->getName() == "player" && obj1->getTag() == "next_level")
+            {
+                toNextLevel(obj1);
+            }
             // // 处理玩家与结束触发器碰撞
             // else if (obj1->getName() == "player" && obj2->getName() == "win")
             // {
@@ -355,6 +356,13 @@ namespace game::scene
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
         createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag()); // 创建特效
         context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");           // 播放音效
+    }
+
+    void GameScene::toNextLevel(engine::object::GameObject *trigger)
+    {
+        auto scene_name = trigger->getName();
+        auto next_scene = std::make_unique<game::scene::GameScene>(scene_name, context_, scene_manager_);
+        scene_manager_.requestReplaceScene(std::move(next_scene));
     }
 
     void GameScene::createEffect(glm::vec2 center_pos, const std::string &tag)
