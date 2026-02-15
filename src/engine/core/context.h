@@ -47,6 +47,7 @@ namespace engine::core
         engine::resource::ResourceManager &resource_manager_; // 资源管理器
         engine::physics::PhysicsEngine &physics_engine_;      // 物理引擎
         engine::audio::AudioPlayer &audio_player_;            // 音频播放器
+        engine::core::GameState &game_state_;                 // 游戏状态
 
     public:
         /**
@@ -63,7 +64,8 @@ namespace engine::core
                 engine::render::TextRenderer &texture_renderer,
                 engine::resource::ResourceManager &resource_manager,
                 engine::physics::PhysicsEngine &physics_engine_,
-                engine::audio::AudioPlayer &audio_player_);
+                engine::audio::AudioPlayer &audio_player_,
+                engine::core::GameState &game_state_);
 
         // 禁止拷贝和移动，Context 对象通常是唯一的或按需创建/传递
         Context(const Context &) = delete;
@@ -99,6 +101,10 @@ namespace engine::core
         engine::audio::AudioPlayer &getAudioPlayer() const
         {
             return audio_player_; // 获取播放器
+        }
+        engine::core::GameState &getGameState() const
+        {
+            return game_state_; // 获取游戏状态
         }
     };
 

@@ -321,6 +321,7 @@ set(SOURCES
     src/engine/core/time.cpp
     src/engine/core/config.cpp
     src/engine/core/context.cpp
+    src/engine/core/game_state.cpp
 
     # engine-resource
     src/engine/resource/resource_manager.cpp
@@ -379,7 +380,8 @@ set(SOURCES
     src/game/scene/game_scene.cpp
     src/game/scene/title_scene.cpp
     src/game/scene/helps_scene.cpp
-
+    src/game/scene/menu_scene.cpp
+    
     # game-component
     src/game/component/player_component.cpp
     src/game/component/ai_component.cpp

@@ -42,6 +42,7 @@ namespace engine::core // 命名空间与路径一致
     class Time;
     class Config;
     class Context;
+    class GameState;
 
     class GameApp final
     {
@@ -62,6 +63,7 @@ namespace engine::core // 命名空间与路径一致
         std::unique_ptr<engine::scene::SceneManager> scene_manager_;
         std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;
         std::unique_ptr<engine::audio::AudioPlayer> audio_player_;
+        std::unique_ptr<engine::core::GameState> game_state_;
 
     public:
         GameApp();
@@ -92,6 +94,7 @@ namespace engine::core // 命名空间与路径一致
         [[nodiscard]] bool initTextRenderer();
         [[nodiscard]] bool initInputManager();
         [[nodiscard]] bool initPhysicsEngine();
+        [[nodiscard]] bool initGameState();
         [[nodiscard]] bool initContext();
         [[nodiscard]] bool initSceneManager();
 

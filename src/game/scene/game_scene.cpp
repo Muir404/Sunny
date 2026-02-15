@@ -1,4 +1,5 @@
 #include "../../engine/core/context.h"
+#include "../../engine/core/game_state.h"
 
 #include "../../engine/object/game_object.h"
 
@@ -42,6 +43,7 @@
 #include "../component/ai/updown_behavior.h"
 
 #include "game_scene.h"
+#include "menu_scene.h"
 
 #include "../data/session_data.h"
 
@@ -66,6 +68,14 @@ namespace game::scene
 
     void GameScene::init()
     {
+        if (is_initialized_)
+        {
+            spdlog::warn("GameScene已经初始化过了，重复调用init()");
+            return;
+        }
+        spdlog::trace("GameScene初始化开始");
+        context_.getGameState().setState(engine::core::State::Playing);
+
         if (!initLevel())
         {
             spdlog::error("关卡初始化失败，无法继续");
@@ -116,6 +126,12 @@ namespace game::scene
     void GameScene::handleInput()
     {
         Scene::handleInput();
+        // check pause action
+        if (context_.getInputManager().isActionPressed("pause"))
+        {
+            spdlog::debug("在GameScene中检查到暂停动作，正在推送MenuScene");
+            scene_manager_.requestPushScene(std::make_unique<MenuScene>(context_, scene_manager_, game_session_data_));
+        }
         // testSaveAndLoad();
         // testCamera();
         // TestObject();
@@ -243,7 +259,7 @@ namespace game::scene
 
     bool GameScene::initUI()
     {
-        if (!ui_manager_->init(glm::vec2(640.0f, 360.0f)))
+        if (!ui_manager_->init(context_.getGameState().getLogicalSize()))
         {
             return false;
         }
@@ -468,7 +484,6 @@ namespace game::scene
     {
         // 创建得分标签
         auto score_text = "Score: " + std::to_string(game_session_data_->getCurrentScore());
-        spdlog::info("aaaaaaaa{}", std::to_string(game_session_data_->getCurrentScore()));
         auto score_label = std::make_unique<engine::ui::UILabel>(context_.getTextRenderer(),
                                                                  score_text,
                                                                  "assets/fonts/VonwaonBitmap-16px.ttf",

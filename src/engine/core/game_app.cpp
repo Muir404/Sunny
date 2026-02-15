@@ -2,6 +2,7 @@
 #include "time.h"
 #include "context.h"
 #include "config.h"
+#include "game_state.h"
 
 #include "../audio/audio_player.h"
 
@@ -119,6 +120,11 @@ namespace engine::core // 命名空间与路径一致
         }
 
         if (!initPhysicsEngine())
+        {
+            return false;
+        }
+
+        if (!initGameState())
         {
             return false;
         }
@@ -383,6 +389,20 @@ namespace engine::core // 命名空间与路径一致
         return true;
     }
 
+    bool GameApp::initGameState()
+    {
+        try
+        {
+            game_state_ = std::make_unique<engine::core::GameState>(window_, sdl_renderer_);
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化游戏状态失败：{}", e.what());
+            return false;
+        }
+        return true;
+    }
+
     bool GameApp::initContext()
     {
         try
@@ -393,7 +413,8 @@ namespace engine::core // 命名空间与路径一致
                                                                *text_renderer_,
                                                                *resource_manager_,
                                                                *physics_engine_,
-                                                               *audio_player_);
+                                                               *audio_player_,
+                                                               *game_state_);
         }
         catch (const std::exception &e)
         {
