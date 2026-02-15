@@ -12,6 +12,7 @@
 
 #include "../render/camera.h"
 #include "../render/renderer.h"
+#include "../render/text_renderer.h"
 
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL.h>
@@ -107,6 +108,11 @@ namespace engine::core // 命名空间与路径一致
             return false;
         }
 
+        if (!initTextRenderer())
+        {
+            return false;
+        }
+
         if (!initInputManager())
         {
             return false;
@@ -131,7 +137,7 @@ namespace engine::core // 命名空间与路径一致
         // testResourceManager();
 
         // 创建第一个场景并压入栈
-        auto scene = std::make_unique<game::scene::GameScene>("level1", *context_, *scene_manager_);
+        auto scene = std::make_unique<game::scene::GameScene>(*context_, *scene_manager_);
         scene_manager_->requestPushScene(std::move(scene));
 
         is_running_ = true; // 设置为运行状态
@@ -192,7 +198,6 @@ namespace engine::core // 命名空间与路径一致
 
         // 为了确保正确的销毁顺序，有些智能指针对象也需要手动管理
         resource_manager_.reset();
-        time_.reset();
 
         if (sdl_renderer_ != nullptr)
         {
@@ -332,6 +337,21 @@ namespace engine::core // 命名空间与路径一致
         return true;
     }
 
+    bool GameApp::initTextRenderer()
+    {
+        try
+        {
+            text_renderer_ = std::make_unique<engine::render::TextRenderer>(sdl_renderer_, resource_manager_.get());
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error("初始化文字渲染引擎失败: {}", e.what());
+            return false;
+        }
+        spdlog::trace("文字渲染引擎初始化成功。");
+        return true;
+    }
+
     bool GameApp::initInputManager()
     {
         try
@@ -368,6 +388,7 @@ namespace engine::core // 命名空间与路径一致
             context_ = std::make_unique<engine::core::Context>(*input_manager_,
                                                                *renderer_,
                                                                *camera_,
+                                                               *text_renderer_,
                                                                *resource_manager_,
                                                                *physics_engine_,
                                                                *audio_player_);

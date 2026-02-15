@@ -9,6 +9,7 @@ namespace engine::render
 {
     class Renderer;
     class Camera;
+    class TextRenderer;
 }
 
 namespace engine::resource
@@ -42,6 +43,7 @@ namespace engine::core
         engine::input::InputManager &input_manager_;          // 输入管理器
         engine::render::Renderer &renderer_;                  // 渲染器
         engine::render::Camera &camera_;                      // 相机
+        engine::render::TextRenderer &texture_renderer_;      // 字体引擎
         engine::resource::ResourceManager &resource_manager_; // 资源管理器
         engine::physics::PhysicsEngine &physics_engine_;      // 物理引擎
         engine::audio::AudioPlayer &audio_player_;            // 音频播放器
@@ -58,6 +60,7 @@ namespace engine::core
         Context(engine::input::InputManager &input_manager,
                 engine::render::Renderer &renderer,
                 engine::render::Camera &camera,
+                engine::render::TextRenderer &texture_renderer,
                 engine::resource::ResourceManager &resource_manager,
                 engine::physics::PhysicsEngine &physics_engine_,
                 engine::audio::AudioPlayer &audio_player_);
@@ -80,6 +83,10 @@ namespace engine::core
         engine::render::Camera &getCamera() const
         {
             return camera_; // 获取相机
+        }
+        engine::render::TextRenderer &getTextRenderer() const
+        {
+            return texture_renderer_;
         }
         engine::resource::ResourceManager &getResourceManager() const
         {
