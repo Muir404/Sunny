@@ -3,6 +3,7 @@
 #include "../object/game_object.h"
 #include "../core/context.h"
 #include "../render/camera.h"
+#include "../ui/ui_manager.h"
 #include "../physics/physics_engine.h"
 #include <algorithm> // for std::remove_if
 #include <spdlog/spdlog.h>
@@ -13,6 +14,7 @@ namespace engine::scene
         : scene_name_(name),
           context_(context),
           scene_manager_(scene_manager),
+          ui_manager_(std::make_unique<engine::ui::UIManager>()),
           is_initialized_(false)
     {
         spdlog::trace("场景 '{}' 构造完成。", scene_name_);
@@ -55,6 +57,8 @@ namespace engine::scene
                 it = game_objects_.erase(it);
             }
         }
+        ui_manager_->update(delta_time, context_); // 更新UI管理器
+
         processPendingAdditions(); // 处理待添加（延时添加）的游戏对象
     }
 
@@ -72,11 +76,20 @@ namespace engine::scene
                 obj->render(context_);
             }
         }
+
+        // 渲染UI管理器内容
+        ui_manager_->render(context_);
     }
 
     void Scene::handleInput()
     {
         if (!is_initialized_)
+        {
+            return;
+        }
+
+        // 先处理UI管理器内容
+        if (ui_manager_->handleInput(context_))
         {
             return;
         }

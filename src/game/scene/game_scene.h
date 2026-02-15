@@ -46,6 +46,7 @@ namespace game::scene
         [[nodiscard]] bool initLevel();
         [[nodiscard]] bool initPlayer();
         [[nodiscard]] bool initEnemyAndItem();
+        [[nodiscard]] bool initUI();
 
         void handleObjectCollisons();                                                                       ///< @brief 处理游戏对象间的碰撞逻辑（从PhysicsEngine获取信息）
         void handleTileTriggers();                                                                          ///< @brief 处理瓦片触发事件（从PhysicsEngine获取信息）

@@ -51,6 +51,9 @@ namespace engine::render
                           const glm::vec2 &position,
                           const std::optional<glm::vec2> &size = std::nullopt);
 
+        void drawUIFilledRect(const engine::utils::Rect &rect,
+                              const engine::utils::FColor &color);
+
         void present();     // 更新屏幕，包装SDL_RenderPresent
         void clearScreen(); // 清屏，包装SDL_RenderClear
 

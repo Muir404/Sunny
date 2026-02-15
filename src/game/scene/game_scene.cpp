@@ -27,6 +27,9 @@
 
 #include "../../engine/utils/math.h"
 
+#include "../../engine/ui/ui_manager.h"
+#include "../../engine/ui/ui_panel.h"
+
 #include "../component/player_component.h"
 #include "../component/ai_component.h"
 
@@ -77,6 +80,13 @@ namespace game::scene
         if (!initEnemyAndItem())
         {
             spdlog::error("敌人和道具初始化失败，无法继续");
+            context_.getInputManager().setShouldQuit(true);
+            return;
+        }
+
+        if (!initUI())
+        {
+            spdlog::error("UI初始化失败，无法继续");
             context_.getInputManager().setShouldQuit(true);
             return;
         }
@@ -229,6 +239,19 @@ namespace game::scene
             }
         }
         return success;
+    }
+
+    bool GameScene::initUI()
+    {
+        if (!ui_manager_->init(glm::vec2(640.0f, 360.0f)))
+        {
+            return false;
+        }
+
+        ui_manager_->addElement(std::make_unique<engine::ui::UIPanel>(glm::vec2{100.0f, 100.0f},
+                                                                        glm::vec2{200.0f, 200.0f},
+                                                                        engine::utils::FColor{0.5f, 0.0f, 0.0f, 0.3f}));
+        return true;
     }
 
     void GameScene::handleObjectCollisons()

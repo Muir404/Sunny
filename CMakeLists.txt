@@ -360,6 +360,11 @@ set(SOURCES
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
     src/engine/scene/level_loader.cpp
+
+    # engine-ui
+    src/engine/ui/ui_element.cpp
+    src/engine/ui/ui_manager.cpp
+    src/engine/ui/ui_panel.cpp
     
     # game-scene
     src/game/scene/game_scene.cpp

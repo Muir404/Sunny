@@ -15,14 +15,12 @@ namespace engine::resource
             throw std::runtime_error("AudioManager 错误: MIX_Init 失败: " + std::string(SDL_GetError()));
         }
 
-        auto raw_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, 0);
-        if (!raw_mixer)
+        mixer_ = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+        if (!mixer_)
         {
             MIX_Quit();
             throw std::runtime_error("AudioManager 错误:Mixer创建失败" + std::string(SDL_GetError()));
         }
-        mixer_ = raw_mixer;
-        // mixer_.reset(raw_mixer);
 
         spdlog::trace("[AudioManager] 构造成功");
     }
@@ -36,9 +34,12 @@ namespace engine::resource
         clearAudio();
 
         // 销毁Mixer
-        mixer_ = nullptr;
-        MIX_DestroyMixer(mixer_);
-
+        if (mixer_ != nullptr)
+        {
+            MIX_DestroyMixer(mixer_);
+            mixer_ = nullptr; // 置空，避免野指针
+            spdlog::trace("[AudioManager] mixer销毁成功");
+        }
         // 退出 SDL_mixer 子系统
         MIX_Quit();
 

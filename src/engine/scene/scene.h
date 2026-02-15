@@ -8,7 +8,10 @@ namespace engine::core
 {
     class Context;
 }
-
+namespace engine::ui
+{
+    class UIManager;
+}
 namespace engine::object
 {
     class GameObject;
@@ -27,9 +30,10 @@ namespace engine::scene
     class Scene
     {
     protected:
-        std::string scene_name_;                     ///< @brief 场景名称
-        engine::core::Context &context_;             ///< @brief 上下文引用（隐式，构造时传入）
-        engine::scene::SceneManager &scene_manager_; ///< @brief 场景管理器引用（构造时传入）
+        std::string scene_name_;                            ///< @brief 场景名称
+        engine::core::Context &context_;                    ///< @brief 上下文引用（隐式，构造时传入）
+        engine::scene::SceneManager &scene_manager_;        ///< @brief 场景管理器引用（构造时传入）
+        std::unique_ptr<engine::ui::UIManager> ui_manager_; // UI管理器
 
         bool is_initialized_ = false;                                                ///< @brief 场景是否已初始化(非当前场景很可能未被删除，因此需要初始化标志避免重复初始化)
         std::vector<std::unique_ptr<engine::object::GameObject>> game_objects_;      ///< @brief 场景中的游戏对象
